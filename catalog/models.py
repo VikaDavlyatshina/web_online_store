@@ -4,15 +4,16 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 
+
 def get_default_category_id():
     """Возвращает ID категории 'Без категории' или создает ее"""
     # чтобы избежать циклического импорта
     from django.apps import apps
 
-    category_model = apps.get_model('catalog', 'Category')
+    category_model = apps.get_model("catalog", "Category")
     category, created = category_model.objects.get_or_create(
         name="Без категории",
-        defaults={'descriptions': 'Товары без указанной категории'}
+        defaults={"descriptions": "Товары без указанной категории"},
     )
     return category.id
 
@@ -22,7 +23,7 @@ class Category(models.Model):
         max_length=150,
         verbose_name="Наименование категории",
         help_text="Введите название категории",
-        unique=True   # Названия Категории должны быть уникальными
+        unique=True,  # Названия Категории должны быть уникальными
     )
     descriptions = models.TextField(
         verbose_name="Описание",
@@ -46,7 +47,7 @@ class Product(models.Model):
         max_length=150,
         verbose_name="Наименование товара",
         help_text="Введите название товара",
-        db_index=True,    # Создает индекс в БД для быстрого поиска и сортировки
+        db_index=True,  # Создает индекс в БД для быстрого поиска и сортировки
     )
     descriptions = models.TextField(
         verbose_name="Описание",
@@ -64,31 +65,32 @@ class Product(models.Model):
     )  #
     category = models.ForeignKey(
         Category,
-        on_delete=models.SET_DEFAULT,   # При удалении категории, у товара category станет DEFAULT
+        on_delete=models.SET_DEFAULT,  # При удалении категории, у товара category станет DEFAULT
         default=get_default_category_id,  # Используем функцию
         verbose_name="Категория",
         help_text="Введите категорию товара",
-        related_name="products",   # Позволяет получать все товары категории: category.products.all()
+        related_name="products",  # Позволяет получать все товары категории: category.products.all()
     )
     purchase_price = models.DecimalField(
         max_digits=10,  # До 10 млн рублей
         decimal_places=2,  # 2 знака = копейки
-        validators=[MinValueValidator(
-            1,  # Минимальная цена - 1 рубль
-            message="Цена должна быть больше нуля. Минимум 1 рубль"
-                                      )
-                    ],
+        validators=[
+            MinValueValidator(
+                1,  # Минимальная цена - 1 рубль
+                message="Цена должна быть больше нуля. Минимум 1 рубль",
+            )
+        ],
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )
     created_at = models.DateTimeField(
-        auto_now_add=True,  # Автоматически при создании
-        verbose_name="Дата создания"
+        auto_now_add=True, verbose_name="Дата создания"  # Автоматически при создании
     )
     updated_at = models.DateTimeField(
         auto_now=True,  # Автоматически при сохранении
-        verbose_name="Дата последнего изменения"
+        verbose_name="Дата последнего изменения",
     )
+
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
