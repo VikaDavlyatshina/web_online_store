@@ -24,7 +24,7 @@ def home(request):
     # Передаём в шаблон
     context = {
         'title': 'Главная страница',
-        'latest_product': latest_products
+        'latest_products': latest_products
     }
 
     return render(request, "catalog/home.html", context)
