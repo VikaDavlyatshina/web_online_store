@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Skystore</title>
+    <!-- Подключение Bootstrap -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link href="/static/css/catalog.css" rel="stylesheet">
 </head>
@@ -26,10 +27,13 @@
             {% for product in latest_products %}
             <div class="col-lg-4 col-md-6 col-sm-12 product-card">
                 <div class="card h-100 box-shadow">
+
+                    <!-- Заголовок карточки -->
                     <div class="card-header bg-light">
                         <h4 class="my-0 font-weight-normal">{{ product.name }}</h4>
                     </div>
 
+                     <!-- Блок с изображением товара -->
                     <div class="card-img-container">
                         {% if product.image %}
                             <img src="{{ product.image.url }}"
@@ -46,6 +50,7 @@
                         {% endif %}
                     </div>
 
+                    <!-- Тело карточки -->
                     <div class="card-body d-flex flex-column">
                         <h2 class="card-title pricing-card-title text-center product-price">
                             {{product.purchase_price}} руб.
@@ -65,6 +70,7 @@
                                     <br>{{ product.created_at|date:"d.m.Y" }}
                                 </li>
 
+                                <!-- Информация о товаре -->
                                 {% if product.descriptions %}
                                 <li class="mb-2">
                                     <strong>Описание:</strong>
@@ -74,6 +80,7 @@
                             </ul>
                         </div>
 
+                        <!-- Кнопка ""Купить" -->
                         <div class="product-actions mt-auto">
                             <button type="button" class="btn btn-lg btn-primary w-100 buy-btn">
                                 Купить
@@ -92,6 +99,7 @@
             {% endfor %}
         </div>
 
+        <!-- Футер -->
         <footer class="pt-4 my-md-5 pt-md-5 border-top">
             <div class="row">
                 <div class="col-12 col-md">
@@ -133,6 +141,7 @@
         </symbol>
     </svg>
 
+    <!-- Подключение Bootstrap JS -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
