@@ -10,7 +10,6 @@ class Command(BaseCommand):
         Product.objects.all().delete()
         Category.objects.all().delete()
 
-
         # 2. Создаём список данных для категорий
         categories_data = [
             {"name": "Без категории", "descriptions": "Товары без указанной категории"},
@@ -25,10 +24,9 @@ class Command(BaseCommand):
         # 4. Создаём категории в базе
         for category_data in categories_data:
             category, created = Category.objects.get_or_create(
-                name=category_data["name"],
-                defaults=category_data
+                name=category_data["name"], defaults=category_data
             )
-            categories[category.name] = category    # Сохраняем словарь
+            categories[category.name] = category  # Сохраняем словарь
 
             if created:
                 self.stdout.write(
@@ -38,7 +36,6 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.WARNING(f"Категория уже существует: {category.name}")
                 )
-
 
         # 5. Создаём данные для товаров
         products_data = [
@@ -84,16 +81,25 @@ class Command(BaseCommand):
         created_count = 0
         for product_data in products_data:
             product, created = Product.objects.get_or_create(
-                name=product_data["name"],
-                defaults=product_data
+                name=product_data["name"], defaults=product_data
             )
             if created:
                 created_count += 1
-                self.stdout.write(self.style.SUCCESS( f'Создан товар: {product.name} - {product.purchase_price} руб.'))
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"Создан товар: {product.name} - {product.purchase_price} руб."
+                    )
+                )
             else:
-                self.stdout.write(self.style.WARNING( f'Товар уже существует: {product.name}'))
+                self.stdout.write(
+                    self.style.WARNING(f"Товар уже существует: {product.name}")
+                )
 
         # 7. Выводим итоги
         self.stdout.write(self.style.SUCCESS(f"ИТОГО: создано {created_count} товаров"))
-        self.stdout.write(self.style.SUCCESS(f"Всего категорий: {Category.objects.count()}"))
-        self.stdout.write(self.style.SUCCESS(f"Всего товаров: {Product.objects.count()}"))
+        self.stdout.write(
+            self.style.SUCCESS(f"Всего категорий: {Category.objects.count()}")
+        )
+        self.stdout.write(
+            self.style.SUCCESS(f"Всего товаров: {Product.objects.count()}")
+        )
