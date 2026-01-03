@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator, MinLengthValidator
 
 # Create your models here.
 
@@ -107,6 +107,15 @@ class Contact(models.Model):
     name = models.CharField(
         max_length=150,
         verbose_name="Имя пользователя",
+        # Разрешаем только буквы (A-Z, А-Я), пробелы и дефисы
+        validators= [
+            RegexValidator(
+                regex=r'^[a-zA-Za-яА-ЯёЁ\s\-]+$',
+                message="Имя должно содержать только буквы, пробелы или дефисы."
+            ),
+            # Минимум 2 символа
+            MinLengthValidator(2, message="Имя слишком короткое")
+        ],
         help_text="Введите ваше имя",
     )
     phone = models.CharField(
@@ -114,10 +123,14 @@ class Contact(models.Model):
         verbose_name="Телефон",
         help_text="Введите контактный телефон",
         validators= [
+            # Проверяет формат: разрешает +, пробелы, скобки, тире
             RegexValidator(
-                regex=r'^(?=(?:\D*\d){5,})[\d\s\-\+\(\)]+$',
-                message='Номер должен содержать минимум 5 цифр и только цифры, пробелы, +, -, (, )'
-            )]
+                regex=r'^\+?[\d\s\-\(\)]+$',
+                message='Номер может содержать только цифры и символы +, -, (, )'),
+                # Гарантирует, что введено достаточно символов
+            MinLengthValidator
+            (10, message='Номер слишком короткий. Введите минимум 10 цифр.')
+        ]
     )
     message = models.TextField(
         verbose_name="Сообщение",
