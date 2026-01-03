@@ -1,10 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Skystore</title>
-    <!-- Подключите статичеcкие файлы со стилями Bootstrap -->
+    <title>Skystore - Контакты</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
 <body>
@@ -18,10 +17,70 @@
 
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Контакты</h1>
+    <p class="lead">Свяжитесь с нами или просмотрите существующие обращения</p>
 </div>
 
 <div class="container">
+    <!-- БЛОК 1: Контакты из админки -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <!-- Шапка карточки -->
+                    <h4 class="my-0 font-weight-normal">📞 Контакты из базы данных</h4>
+                </div>
+                <div class="card-body">
+
+                    <!-- Тело карточки -->
+                    {% if contacts %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Имя</th>
+                                    <th>Телефон</th>
+                                    <th>Сообщение</th>
+                                    <th>Дата создания</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Тело таблицы -->
+                                {% for contact in contacts %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><strong>{{ contact.name }}</strong></td>
+                                    <td>{{ contact.phone }}</td>
+                                    <td>
+                                        <span class="text-muted"
+                                              data-bs-toggle="tooltip"
+                                              title="{{ contact.message }}">
+                                            {{ contact.message|truncatechars:50 }}
+                                        </span>
+                                    </td>
+                                    <td>{{ contact.created_at|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <p class="text-muted mt-2">
+                            <small>Всего контактов: {{ contacts|length }}</small>
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <h5 class="alert-heading">Контактов пока нет</h5>
+                        <p class="mb-0">Добавьте контакты используя форму ниже</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- БЛОК 2: Основная информация и форма -->
     <div class="row text-start">
+        <!--КОЛОНКА 1: Информация о компании -->
         <div class="col-lg-9 col-md-6 col-sm-12">
             <div class="card mb-4 box-shadow">
                 <div class="card-body">
@@ -36,12 +95,14 @@
                         </tr>
                         <tr>
                             <td class="w-25">Адрес</td>
-                            <td>Redmond,WA,98052-6399</td>
+                            <td>Redmond, WA, 98052-6399</td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
+
+        <!--КОЛОНКА 2: Форма обратной связи -->
         <div class="col-lg-3 col-md-6 col-sm-12">
             <div class="card mb-4 box-shadow">
                 <div class="card-header">
@@ -53,27 +114,28 @@
                         <div class="mb-3">
                             <label for="name">Имя</label>
                             <input type="text" name="name" class="form-control" id="name"
-                                   placeholder="Ваше имя" required
-                                   autocomplete="name">
+                                   placeholder="Ваше имя" required autocomplete="name">
                         </div>
                         <div class="mb-3">
                             <label for="phone">Телефон</label>
                             <input type="tel" name="phone" class="form-control" id="phone"
-                                   placeholder="Контактный телефон" required
-                                   autocomplete="tel">
+                                   placeholder="Контактный телефон" required autocomplete="tel">
                         </div>
                         <div class="mb-3">
                             <label for="message">Сообщение</label>
                             <textarea name="message" class="form-control" id="message"
                                       placeholder="Ваше сообщение" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Отправить</button>
+                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary w-100">
+                            Отправить
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Сообщение об успешной отправке -->
     {% if success %}
     <div class="row mt-4">
         <div class="col-lg-12">
@@ -91,11 +153,13 @@
     </div>
     {% endif %}
 
+
+    <!-- Футер -->
     <footer class="pt-4 my-md-5 pt-md-5 border-top">
         <div class="row">
             <div class="col-12 col-md">
                 SkyStore
-                <small class="d-block mb-3 text-muted">&copy; 2023</small>
+                <small class="d-block mb-3 text-muted">&copy; 2026</small>
             </div>
             <div class="col-6 col-md">
                 <h5>Категории</h5>
@@ -123,7 +187,24 @@
     </footer>
 </div>
 
-<!-- Подключите статичеcкие файлы со скриптами Bootstrap -->
 <script src="/static/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 1. Ждем, пока страница загрузится
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // 2. Ищем все элементы с подсказками
+    var tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+
+    // 3. Проверяем: если таких элементов нет - выходим
+    if (tooltipElements.length === 0) return;
+
+    // 4. Для каждого найденного элемента
+    tooltipElements.forEach(function(element) {
+        // 5. Создаем подсказку Bootstrap
+        new bootstrap.Tooltip(element);
+    });
+
+});
+</script>
 </body>
 </html>

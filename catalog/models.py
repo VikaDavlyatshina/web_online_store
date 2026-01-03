@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 
 # Create your models here.
 
@@ -19,6 +19,7 @@ def get_default_category_id():
 
 
 class Category(models.Model):
+    """ Модель для Категории"""
     name = models.CharField(
         max_length=150,
         verbose_name="Наименование категории",
@@ -43,6 +44,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """ Модель для Продукта(Товара)"""
     name = models.CharField(
         max_length=150,
         verbose_name="Наименование товара",
@@ -98,3 +100,43 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.purchase_price} руб."
+
+
+class Contact(models.Model):
+    """ Модель для Контактов"""
+    name = models.CharField(
+        max_length=150,
+        verbose_name="Имя пользователя",
+        help_text="Введите ваше имя",
+    )
+    phone = models.CharField(
+        max_length=20,
+        verbose_name="Телефон",
+        help_text="Введите контактный телефон",
+        validators= [
+            RegexValidator(
+                regex=r'^(?=(?:\D*\d){5,})[\d\s\-\+\(\)]+$',
+                message='Номер должен содержать минимум 5 цифр и только цифры, пробелы, +, -, (, )'
+            )]
+    )
+    message = models.TextField(
+        verbose_name="Сообщение",
+        help_text="Введите ваше сообщение",
+        max_length=2000,
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания"
+    )
+
+    class Meta:
+        verbose_name = "Контакт"
+        verbose_name_plural = "Контакты"
+        ordering = ["-created_at"]
+        indexes = [
+        models.Index(fields=['-created_at']),
+        models.Index(fields=['name']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.phone}) - {self.created_at.strftime('%d.%m.%Y %H:%M')}"

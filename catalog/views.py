@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from .models import Product
+from django.shortcuts import render, redirect
+from django.core.exceptions import ValidationError
+from .models import Product, Contact
 
 # Create your views here.
 
@@ -29,21 +30,50 @@ def home(request):
 
 
 def contacts(request):
-    context = {}  # Создаём пустой контекст
+    """Контроллер страницы Контактов"""
+
+    # Все контакты для отображения
+    context = {'contacts': Contact.objects.all().order_by("-created_at")}
 
     if request.method == "POST":
-        # Получаем данные из формы
-        name = request.POST.get("name", "")
-        phone = request.POST.get("phone", "")
-        message = request.POST.get("message", "")
+        name = request.POST.get("name", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        message = request.POST.get("message", "").strip()
 
-        # Для отладки
-        print(f"Сообщение от {name}: {message[:50]}")
+        # Сохраняем данные для формы
+        context['form_data'] = {'name': name, 'phone': phone, 'message': message}
 
-        # Добавляем сообщение об успехе в контекст
-        context["success"] = True
-        context["success_message"] = (
-            f"Спасибо, {name}! Ваше сообщение успешно отправлено."
-        )
+        # Создаем и валидируем
+        contact = Contact(name=name, phone=phone, message=message)
+
+        try:
+            contact.full_clean()
+            contact.save()
+
+            # Сохраняем в сессии для показа после редиректа
+            request.session['contact_success'] = {
+                'message': f"Спасибо, {name}! Ваше сообщение успешно отправлено."
+            }
+
+            # Редирект с сохранением успешного сообщения
+            return redirect('/catalog/contacts/')
+
+        except ValidationError as e:
+            # Обрабатываем ошибку
+            if 'phone' in e.message_dict:
+                context['error'] = e.message_dict['phone'][0]
+            elif 'name' in e.message_dict:
+                context['error'] = e.message_dict['name'][0]
+            else:
+                context['error'] = "Ошибка при сохранении"
+
+            # При ошибке показываем сразу (без редиректа)
+            return render(request, "catalog/contacts.html", context)
+
+    # GET запрос - проверяем успешные сообщения из сессии
+    if 'contact_success' in request.session:
+        success_data = request.session.pop('contact_success')
+        context['success'] = True
+        context['success_message'] = success_data['message']
 
     return render(request, "catalog/contacts.html", context)
