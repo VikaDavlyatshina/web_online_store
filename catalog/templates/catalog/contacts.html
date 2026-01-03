@@ -114,17 +114,27 @@
                         <div class="mb-3">
                             <label for="name">Имя</label>
                             <input type="text" name="name" class="form-control" id="name"
-                                   placeholder="Ваше имя" required autocomplete="name">
+                                   placeholder="Ваше имя"
+                                   required
+                                   autocomplete="name"
+                                   value="{{ form_data.name|default:'' }}"
+                                   pattern="^[a-zA-Zа-яА-ЯёЁ\s\-]{2,150}$"
+                                   title="Используйте только буквы, пробелы или дефис (минимум 2 символа)">
                         </div>
                         <div class="mb-3">
                             <label for="phone">Телефон</label>
                             <input type="tel" name="phone" class="form-control" id="phone"
-                                   placeholder="Контактный телефон" required autocomplete="tel">
+                                   placeholder="+7 (999) 000-00-00"
+                                   required
+                                   autocomplete="tel"
+                                   value="{{ form_data.phone|default:'' }}"
+                                   pattern="^[\d\+\-\(\)\s]{10,20}$"
+                                   title="Введите корректный номер телефона (минимум 10 цифр)">
                         </div>
                         <div class="mb-3">
                             <label for="message">Сообщение</label>
                             <textarea name="message" class="form-control" id="message"
-                                      placeholder="Ваше сообщение" required></textarea>
+                                      placeholder="Ваше сообщение" required>{{ form_data.message|default:'' }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block btn-outline-primary w-100">
                             Отправить
@@ -135,16 +145,36 @@
         </div>
     </div>
 
-    <!-- Сообщение об успешной отправке -->
-    {% if success %}
+    <!-- Блок уведомлений -->
+    {% if alert %}
     <div class="row mt-4">
         <div class="col-lg-12">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <h4 class="alert-heading">✅ Сообщение отправлено!</h4>
-                <p>{{ success_message }}</p>
-                <p>Мы свяжемся с вами в ближайшее время.</p>
+            <div class="alert {% if alert.type == 'success'%}alert-success{% else %}alert-danger{% endif %}
+            alert-dismissible fade show" role="alert">
+
+                <!-- Заголовок в зависимости от типа -->
+                <h4 class="alert-heading">
+                    {% if alert.type == 'success' %}
+                    ✅ Сообщение отправлено!
+                    {% else %}
+                    ❌ Сообщение не отправлено!
+                    {% endif %}
+                </h4>
+
+                <!-- Основное сообщение -->
+                <p>{{ alert.message }}</p>
+
+                <!-- Дополнительный текст -->
+                {% if alert.type == 'success' %}
+                    <p>Мы свяжемся с вами в ближайшее время.</p>
+                {% else %}
+                    <p>Попробуйте отправить сообщение снова.</p>
+                {% endif %}
+
                 <hr>
-                <button type="button" class="btn btn-outline-success btn-sm"
+                 <!-- Кнопка закрытия -->
+                <button type="button" class="btn {% if alert.type == 'success' %}btn-outline-success{% else %}
+                btn-outline-danger{% endif %} btn-sm"
                         onclick="this.parentElement.parentElement.style.display='none'">
                     Закрыть
                 </button>

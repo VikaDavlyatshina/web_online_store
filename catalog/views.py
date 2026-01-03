@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from .models import Product, Contact
 
 # Create your views here.
@@ -32,48 +33,73 @@ def home(request):
 def contacts(request):
     """Контроллер страницы Контактов"""
 
-    # Все контакты для отображения
-    context = {'contacts': Contact.objects.all().order_by("-created_at")}
+    # Базовый контекст
+    context = {
+        'contacts': Contact.objects.all().order_by("-created_at")
+    }
 
+    # Обработка POST-запроса (отправка формы)
     if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        phone = request.POST.get("phone", "").strip()
-        message = request.POST.get("message", "").strip()
-
-        # Сохраняем данные для формы
-        context['form_data'] = {'name': name, 'phone': phone, 'message': message}
-
-        # Создаем и валидируем
-        contact = Contact(name=name, phone=phone, message=message)
+        # Получаем данные из формы
+        form_data = {
+            'name': request.POST.get("name", "").strip(),
+            'phone': request.POST.get("phone", "").strip(),
+            'message': request.POST.get("message", "").strip()
+        }
 
         try:
+            # Создаем и валидируем контакт
+            contact = Contact(**form_data)
             contact.full_clean()
             contact.save()
 
-            # Сохраняем в сессии для показа после редиректа
-            request.session['contact_success'] = {
-                'message': f"Спасибо, {name}! Ваше сообщение успешно отправлено."
+            # Успешное сообщение
+            request.session['contact_alert'] = {
+                'type': 'success',
+                'message': f"Спасибо, {contact.name}! Сообщение отправлено.",
             }
 
-            # Редирект с сохранением успешного сообщения
-            return redirect('/catalog/contacts/')
-
         except ValidationError as e:
-            # Обрабатываем ошибку
-            if 'phone' in e.message_dict:
-                context['error'] = e.message_dict['phone'][0]
-            elif 'name' in e.message_dict:
-                context['error'] = e.message_dict['name'][0]
+            # Формируем сообщения об ошибках
+            errors = []
+            field_names = {'name': 'Имя', 'phone': 'Телефон', 'message': 'Сообщение'}
+
+            for field, name in field_names.items():
+                if field in e.message_dict:
+                    errors.append(f"{name}: {e.message_dict[field][0]}")
+
+            if not errors and e.messages:
+                errors = list(e.messages)
+
+            # Формируем итоговое сообщение
+            if errors:
+                error_text = f"Пожалуйста исправьте ошибки перед отправкой: {'; '.join(errors)}"
             else:
-                context['error'] = "Ошибка при сохранении"
+                error_text = "Произошла ошибка при отправке сообщения"
 
-            # При ошибке показываем сразу (без редиректа)
-            return render(request, "catalog/contacts.html", context)
+            # Сообщение об ошибке
+            request.session['contact_alert'] = {
+                'type': 'error',
+                'message': error_text,
+                'form_data': form_data
+            }
 
-    # GET запрос - проверяем успешные сообщения из сессии
-    if 'contact_success' in request.session:
-        success_data = request.session.pop('contact_success')
-        context['success'] = True
-        context['success_message'] = success_data['message']
+        # Редирект после POST
+        return redirect(reverse('catalog:contacts'))
+
+    # Обработка GET-запроса (отображение страницы)
+
+    # Проверяем сообщения из сессии
+    if 'contact_alert' in request.session:
+        alert_data = request.session.pop('contact_alert')
+
+        context['alert'] = {
+            'type': alert_data['type'],
+            'message': alert_data['message']
+        }
+
+        # Восстанавливаем данные формы
+        if 'form_data' in alert_data:
+            context['form_data'] = alert_data['form_data']
 
     return render(request, "catalog/contacts.html", context)
