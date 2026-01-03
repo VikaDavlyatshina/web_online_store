@@ -74,7 +74,11 @@
                                 {% if product.descriptions %}
                                 <li class="mb-2">
                                     <strong>Описание:</strong>
-                                    <br><small class="text-muted">{{ product.descriptions|truncatechars:100 }}</small>
+                                    <br>
+                                    <small class="text-muted"
+                                           data-bs-toggle="tooltip"
+                                           title="{{ product.descriptions }}">
+                                    {{ product.descriptions|truncatechars:100 }}</small>
                                 </li>
                                 {% endif %}
                             </ul>
@@ -143,5 +147,23 @@
 
     <!-- Подключение Bootstrap JS -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 1. Ждем, пока страница загрузится
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // 2. Ищем все элементы с подсказками
+    var tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+
+    // 3. Проверяем: если таких элементов нет - выходим
+    if (tooltipElements.length === 0) return;
+
+    // 4. Для каждого найденного элемента
+    tooltipElements.forEach(function(element) {
+        // 5. Создаем подсказку Bootstrap
+        new bootstrap.Tooltip(element);
+    });
+
+});
+</script>
 </body>
 </html>
