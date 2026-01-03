@@ -1,0 +1,67 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "name": "Смартфон Apple iPhone 17 Pro 256 ГБ оранжевый",
+        "descriptions": null,
+        "image": "",
+        "category": 3,
+        "purchase_price": "132000.00",
+        "created_at": "2026-01-01T21:13:09.830Z",
+        "updated_at": "2026-01-01T21:13:09.830Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+        "name": "Холодильник с морозильником LG GA-B509MQSL белый",
+        "descriptions": "Вместительный холодильник на 342 л. Стильный, белого цвета",
+        "image": "",
+        "category": 4,
+        "purchase_price": "54999.00",
+        "created_at": "2026-01-01T23:37:42.708Z",
+        "updated_at": "2026-01-01T23:37:42.708Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 7,
+    "fields": {
+        "name": "Смартфон Samsung Galaxy S25 FE 256 ГБ черный",
+        "descriptions": "Оснащен мощным процессором, который обеспечивает молниеносную производительность в любых задачах.",
+        "image": "",
+        "category": 3,
+        "purchase_price": "54999.00",
+        "created_at": "2026-01-01T23:44:03.733Z",
+        "updated_at": "2026-01-01T23:44:03.733Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 8,
+    "fields": {
+        "name": "Холодильник с морозильником DEXP B2-26AMG белый",
+        "descriptions": "Холодильник 252 л, внешнее покрытие-металл, размораживание - ручное",
+        "image": "",
+        "category": 6,
+        "purchase_price": "24999.00",
+        "created_at": "2026-01-01T23:50:39.426Z",
+        "updated_at": "2026-01-01T23:50:39.426Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 9,
+    "fields": {
+        "name": "ПК ARDOR GAMING RAGE H4259",
+        "descriptions": "AMD Ryzen 5 7500F, 6 x 3.7 ГГц, 32 ГБ DDR5, GeForce RTX 5060, SSD 1000 ГБ, без ОС, 1 x HDMI, 3 x DisplayPort, Wi-Fi, Bluetooth, AMD B650, блок питания - 650 Вт",
+        "image": "",
+        "category": 5,
+        "purchase_price": "134999.00",
+        "created_at": "2026-01-01T23:54:17.015Z",
+        "updated_at": "2026-01-01T23:54:17.015Z"
+    }
+}
+]
