@@ -26,7 +26,7 @@ class Category(models.Model):
         help_text="Введите название категории",
         unique=True,  # Названия Категории должны быть уникальными
     )
-    descriptions = models.TextField(
+    description = models.TextField(
         verbose_name="Описание",
         help_text="Введите описание категории",
         blank=True,
@@ -51,7 +51,7 @@ class Product(models.Model):
         help_text="Введите название товара",
         db_index=True,  # Создает индекс в БД для быстрого поиска и сортировки
     )
-    descriptions = models.TextField(
+    description = models.TextField(
         verbose_name="Описание",
         help_text="Введите описание товара",
         blank=True,

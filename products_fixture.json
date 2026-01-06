@@ -1,67 +1,106 @@
 [
 {
     "model": "catalog.product",
-    "pk": 4,
+    "pk": 10,
     "fields": {
         "name": "Смартфон Apple iPhone 17 Pro 256 ГБ оранжевый",
-        "descriptions": null,
+        "description": "Новый флагманский смартфон Apple",
         "image": "",
-        "category": 3,
+        "category": 8,
         "purchase_price": "132000.00",
-        "created_at": "2026-01-01T21:13:09.830Z",
-        "updated_at": "2026-01-01T21:13:09.830Z"
+        "created_at": "2026-01-02T10:47:32.934Z",
+        "updated_at": "2026-01-02T10:47:32.934Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 6,
+    "pk": 11,
     "fields": {
         "name": "Холодильник с морозильником LG GA-B509MQSL белый",
-        "descriptions": "Вместительный холодильник на 342 л. Стильный, белого цвета",
-        "image": "",
-        "category": 4,
+        "description": "Вместительный холодильник на 342 л. Стильный, белого цвета",
+        "image": "catalog/product_photo/Холодильник_LG_Белый.jpg",
+        "category": 9,
         "purchase_price": "54999.00",
-        "created_at": "2026-01-01T23:37:42.708Z",
-        "updated_at": "2026-01-01T23:37:42.708Z"
+        "created_at": "2026-01-02T10:47:32.938Z",
+        "updated_at": "2026-01-02T20:38:31.444Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 7,
+    "pk": 12,
     "fields": {
         "name": "Смартфон Samsung Galaxy S25 FE 256 ГБ черный",
-        "descriptions": "Оснащен мощным процессором, который обеспечивает молниеносную производительность в любых задачах.",
-        "image": "",
-        "category": 3,
+        "description": "Оснащен мощным процессором, который обеспечивает молниеносную производительность в любых задачах.",
+        "image": "catalog/product_photo/Samsung_Galaxy_S25_Черный.png.webp",
+        "category": 8,
         "purchase_price": "54999.00",
-        "created_at": "2026-01-01T23:44:03.733Z",
-        "updated_at": "2026-01-01T23:44:03.733Z"
+        "created_at": "2026-01-02T10:47:32.939Z",
+        "updated_at": "2026-01-02T20:39:03.126Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 8,
-    "fields": {
-        "name": "Холодильник с морозильником DEXP B2-26AMG белый",
-        "descriptions": "Холодильник 252 л, внешнее покрытие-металл, размораживание - ручное",
-        "image": "",
-        "category": 6,
-        "purchase_price": "24999.00",
-        "created_at": "2026-01-01T23:50:39.426Z",
-        "updated_at": "2026-01-01T23:50:39.426Z"
-    }
-},
-{
-    "model": "catalog.product",
-    "pk": 9,
+    "pk": 13,
     "fields": {
         "name": "ПК ARDOR GAMING RAGE H4259",
-        "descriptions": "AMD Ryzen 5 7500F, 6 x 3.7 ГГц, 32 ГБ DDR5, GeForce RTX 5060, SSD 1000 ГБ, без ОС, 1 x HDMI, 3 x DisplayPort, Wi-Fi, Bluetooth, AMD B650, блок питания - 650 Вт",
-        "image": "",
-        "category": 5,
-        "purchase_price": "134999.00",
-        "created_at": "2026-01-01T23:54:17.015Z",
-        "updated_at": "2026-01-01T23:54:17.015Z"
+        "description": "AMD Ryzen 5 7500F, 6 x 3.7 ГГц, 32 ГБ DDR5, GeForce RTX 5060, SSD 1000 ГБ, без ОС, 1 x HDMI, 3 x DisplayPort, Wi-Fi, Bluetooth, AMD B650, блок питания - 650 Вт",
+        "image": "catalog/product_photo/Пк_ARDOR__.jpg.webp",
+        "category": 10,
+        "purchase_price": "135000.00",
+        "created_at": "2026-01-02T10:47:32.941Z",
+        "updated_at": "2026-01-02T20:36:12.988Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 14,
+    "fields": {
+        "name": "Холодильник с морозильником LG GA-B459CLWL серый",
+        "description": "Холодильник на 341 л, внешнее покрытие-металл, размораживание - No Frost, дисплей, 59.5 см х 186 см х 68.2 см",
+        "image": "catalog/product_photo/Холодильник_серый_Lg_Nryhiyn.jpg",
+        "category": 9,
+        "purchase_price": "48999.00",
+        "created_at": "2026-01-02T10:47:32.943Z",
+        "updated_at": "2026-01-02T13:38:18.189Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 15,
+    "fields": {
+        "name": "Пижама теплая новогодняя с оленем",
+        "description": "Это не просто домашняя одежда — это маленький праздник, который всегда с вами. Мягкая плюшевая ткань окутывает теплом, а очаровательная вышивка с оленем напоминает о волшебстве зимних дней.",
+        "image": "catalog/product_photo/Пижама_с_оленем.webp",
+        "category": 7,
+        "purchase_price": "1508.00",
+        "created_at": "2026-01-02T10:47:32.944Z",
+        "updated_at": "2026-01-02T13:34:09.787Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 16,
+    "fields": {
+        "name": "Набор для создания садика из суккулентов в гипсовом кашпо",
+        "description": "Вырасти свой домашний садик из суккулентов или подари близкому человеку!",
+        "image": "catalog/product_photo/Сиккуленты.jpg",
+        "category": 7,
+        "purchase_price": "3257.00",
+        "created_at": "2026-01-02T20:45:30.009Z",
+        "updated_at": "2026-01-02T20:48:36.115Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 17,
+    "fields": {
+        "name": "Игровой коврик для мыши Лягушки",
+        "description": "Милый игровой коврик добавить уюта вашему рабочему месту .Идеально подходит для рабочего стола и обеспечивает идеальное мобильное пространство.\r\nподходит для всех типов клавиатур и мышей.",
+        "image": "catalog/product_photo/Коврик_игровой_Лягушки180x240.webp",
+        "category": 7,
+        "purchase_price": "850.00",
+        "created_at": "2026-01-02T20:48:17.467Z",
+        "updated_at": "2026-01-02T20:48:17.467Z"
     }
 }
 ]
