@@ -12,11 +12,11 @@ def home(request):
     # Выборка последних 5 товаров по дате создания
     # order_by('-created_at') -> сортировка по убыванию даты (новые первыми)
     # [:5] → берём первые
-    latest_products = Product.objects.order_by("-created_at")[:5]
+    latest_products = Product.objects.order_by("-created_at")
 
     # Вывод в консоль
     print("Последние 5 товаров (вывод в консоль):")
-    for i, product in enumerate(latest_products, 1):
+    for i, product in enumerate(latest_products[:5], 1):
         print(
             f"{i}. {product.name}\n"
             f"Цена: {product.purchase_price}\n"
@@ -103,3 +103,13 @@ def contacts(request):
             context['form_data'] = alert_data['form_data']
 
     return render(request, "catalog/contacts.html", context)
+
+def product_details(request, pk):
+    """Контроллер страницы Товара"""
+    product = Product.objects.get(pk=pk)
+
+    # Базовый контекст
+    context = {
+        'product': product
+    }
+    return render(request, "catalog/product_details.html", context)
