@@ -1,10 +1,190 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
 
-</body>
-</html>
+{% block title %}Добавить товар{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-stretch">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">📋 Инструкция</h4>
+
+                    <div class="alert alert-info">
+                        <strong>Поля со * обязательны для заполнения</strong>
+                    </div>
+
+                    <!-- Аккордеон с советами -->
+                    <div class="accordion" id="helpAccordion">
+
+                        <!-- Совет 1 -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#help1">
+                                    ✏️ Как назвать товар?
+                                </button>
+                            </h5>
+                            <div id="help1" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Укажите бренд и модель</li>
+                                        <li>Используйте ключевые слова</li>
+                                        <li>Будьте конкретны</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Совет 2 -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#help2">
+                                    💰 Как назначить цену?
+                                </button>
+                            </h5>
+                            <div id="help2" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Учитывайте стоимость доставки</li>
+                                        <li>Сравните с конкурентами</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Совет 3 -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#help3">
+                                    📸 Как сделать фото?
+                                </button>
+                            </h5>
+                            <div id="help3" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Используйте хорошее освещение</li>
+                                        <li>Покажите товар с разных ракурсов</li>
+                                        <li>Фон должен быть нейтральным</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ещё советы... -->
+
+                    </div>
+
+                    <!-- Чек-лист внизу -->
+                    <div class="p-3 bg-light rounded mb-4">
+                        <h6>✅ Быстрая проверка:</h6>
+                        <!-- ... чекбоксы ... -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkPrice">
+                            <label class="form-check-label" for="checkPrice">Цена адекватная</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkPhoto">
+                            <label class="form-check-label" for="checkPhoto">Фото чёткое</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkDescription">
+                            <label class="form-check-label" for="checkDescription">Описание полное</label>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-muted">
+                            <small> После добавления товар появится в каталоге через 5-10 минут</small>
+                        </p>
+                    </div>
+
+                    <!-- ЯВНАЯ нижняя граница -->
+                    <div class="card-footer bg-white border-top text-center py-3">
+                        <small class="text-muted">
+                            <i class="bi bi-question-circle me-1"></i>
+                            Нужна помощь? Напишите в поддержку
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+            <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Заполните данные</h5>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Название -->
+                        <div class="mb-3">
+                            <label class="form-label">Название товара *</label>
+                            <input type="text" class="form-control" name="name"
+                                   placeholder="Например: Набор для творчества 'Алмазная мозайка' " required>
+                        </div>
+
+                        <!-- Категория -->
+                        <div class="mb-3">
+                            <label class="form-label">Категория *</label>
+                            <select class="form-select" name="category" required>
+                                <option value="" disabled selected>Выберите категорию...</option>
+
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Цена -->
+                        <div class="mb-3">
+                            <label class="form-label">Цена *</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="price"
+                                       placeholder="0.00" step="0.01" min="1" required>
+                                <span class="input-group-text">₽</span>
+                            </div>
+                        </div>
+
+                        <!-- Описание -->
+                        <div class="mb-3">
+                            <label class="form-label">Описание</label>
+                            <textarea class="form-control" name="description"
+                                      placeholder="Опишите товар подробно: материалы, размеры, особенности..."
+                                      rows="4" required></textarea>
+                        </div>
+
+                        <!-- Фото -->
+                        <div class="mb-3">
+                            <label class="form-label">Фото товара *</label>
+                            <input type="file" class="form-control" name="image"
+                                   accept="image/*">
+                            <div class="form-text">Максимальный размер: 5MB</div>
+                        </div>
+
+                        <!-- Кнопка -->
+                        <button type="submit" class="btn w-100 py-3 shadow-sm"
+                                style="background-color: #57D4AB; color: white;
+                                border-radius: 10px; border: none;">
+                            <i class="bi bi-plus-square me-2"></i>
+                            Добавить товар в каталог
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

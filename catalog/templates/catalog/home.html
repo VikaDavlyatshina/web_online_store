@@ -1,5 +1,5 @@
 {% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
-
+{% load my_tags %}
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}
@@ -18,9 +18,7 @@
                 <!-- Блок с изображением товара -->
                 <div class="card-img-container">
                     {% if product.image %}
-                    <img src="{{ product.image.url }}"
-                         class="card-img-top"
-                         alt="{{ product.name }}">
+                    <img src="{{ product.image | media_filter }}">
                     {% else %}
                     <div class="no-image-placeholder">
                         <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">

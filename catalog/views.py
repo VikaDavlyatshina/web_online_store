@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from .models import Product, Contact
+from .models import Product, Contact, Category
 
 # Create your views here.
 
@@ -113,3 +113,70 @@ def product_details(request, pk):
         'product': product
     }
     return render(request, "catalog/product_details.html", context)
+
+def product_add(request):
+    """Контроллер страницы Добавления товар"""
+
+    # Базовый контекст - все категории
+    categories = Category.objects.all().order_by('name')
+    context = {
+        'categories': categories
+    }
+
+    # Обработка POST-запроса (отправка формы)
+    if request.method == "POST":
+        # Получаем данные из формы
+        form_data = {
+            'name': request.POST.get("name", "").strip(),  # было name, стало title
+            'category_id': request.POST.get("category", "").strip(),  # получаем ID категории
+            'price': request.POST.get("price", "").strip(),
+            'description': request.POST.get("description", "").strip(),
+        }
+
+        #  Получаем файл изображения
+        image = request.FILES.get("image")
+
+        # Преобразуем цену в число
+        try:
+            form_data['price'] = float(form_data['price'])
+        except (ValueError, TypeError):
+            raise ValidationError({'price': 'Цена должна быть числом'})
+
+        # Находим категорию по ID
+        category_id = form_data.pop('category_id')
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            raise ValidationError({'category': 'Категория не найдена'})
+        except ValueError:
+            raise ValidationError({'category': 'Некорректный ID категории'})
+
+        # Создаем товар
+        product = Product(
+            name=form_data['name'],
+            category=category,
+            purchase_price=form_data['price'],
+            description=form_data['description'],
+        )
+
+        # Если есть фото - сохраняем
+        if image:
+            product.image = image
+
+        # Валидируем и сохраняем
+        product.full_clean()
+        product.save()
+
+        # Успешное сообщение
+        request.session['product_alert'] = {
+            'type': 'success',
+            'message': f"Товар '{product.name}' успешно добавлен!",
+        }
+
+
+
+        return redirect(reverse('catalog:product_details', args=[product.pk]))
+
+
+
+    return render(request, "catalog/product_add.html", context)
