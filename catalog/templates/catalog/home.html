@@ -32,10 +32,6 @@
 
                 <!-- Тело карточки -->
                 <div class="card-body d-flex flex-column">
-                    <h2 class="card-title pricing-card-title text-center product-price">
-                        {{product.purchase_price}} руб.
-                    </h2>
-
                     <div class="product-info">
                         <ul class="list-unstyled mb-4">
                             <li class="mb-2">
@@ -43,11 +39,6 @@
                                 <span class="badge bg-secondary ms-1">
                                     {{ product.category.name|default:"Без категории"}}
                                 </span>
-                            </li>
-
-                            <li class="mb-2">
-                                <strong>Дата добавления:</strong>
-                                <br>{{ product.created_at|date:"d.m.Y" }}
                             </li>
 
                             <!-- Информация о товаре -->
