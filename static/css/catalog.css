@@ -122,3 +122,29 @@
     display: flex;
     flex-wrap: wrap;
 }
+
+/* === 2. ИЗОБРАЖЕНИЕ (фиксированная) === */
+.product-details-img-container {
+    height: 200px; /* ФИКСИРОВАННАЯ высота */
+    overflow: hidden;
+    background-color: #f8f9fa;
+    position: relative;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.product-details-img-container img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.product-details-img-container img:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+}
