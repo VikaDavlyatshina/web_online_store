@@ -1,4 +1,4 @@
-{% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
+{% extends 'base.html' %}
 {% load my_tags %}
 {% block title %}Главная страница{% endblock %}
 
@@ -6,7 +6,7 @@
 
 <div class="container">
     <div class="row align-items-stretch">
-        {% for product in latest_products %}
+        {% for product in page_obj %}
         <div class="col-lg-4 col-md-6 col-sm-12 product-card">
             <div class="card h-100 box-shadow">
 
@@ -82,8 +82,54 @@
             </div>
         </div>
         {% endfor %}
+
+        <!-- ПАГИНАЦИЯ -->
+        {% if page_obj.has_other_pages %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Кнопка "Назад" -->
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    ← Назад
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">← Назад</span>
+                            </li>
+                        {% endif %}
+
+                        <!-- Текущая страница и общее количество -->
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        <!-- Кнопка "Вперед" -->
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    Вперед →
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Вперед →</span>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 </div>
-
 
 {% endblock %}

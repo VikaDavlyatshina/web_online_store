@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -9,14 +10,13 @@ from .models import Product, Contact, Category
 def home(request):
     """Контроллер Главной страницы"""
 
-    # Выборка последних 5 товаров по дате создания
     # order_by('-created_at') -> сортировка по убыванию даты (новые первыми)
-    # [:5] → берём первые
-    latest_products = Product.objects.order_by("-created_at")
+
+    all_products = Product.objects.order_by("-created_at")
 
     # Вывод в консоль
     print("Последние 5 товаров (вывод в консоль):")
-    for i, product in enumerate(latest_products[:5], 1):
+    for i, product in enumerate(all_products[:5], 1):
         print(
             f"{i}. {product.name}\n"
             f"Цена: {product.purchase_price}\n"
@@ -24,8 +24,20 @@ def home(request):
             f"Создан: {product.created_at}\n"
         )
 
-    # Передаём в шаблон
-    context = {"title": "Главная страница", "latest_products": latest_products}
+    # Создаем пагинатор: 6 товаров на страницу
+    paginator = Paginator(all_products, 6)
+
+    # Получаем номер страницы из GET-параметра
+    page_number = request.GET.get('page')
+
+    # Получаем объект страницы
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+         'paginator': paginator
+    }
+
 
     return render(request, "catalog/home.html", context)
 
@@ -166,14 +178,6 @@ def product_add(request):
         # Валидируем и сохраняем
         product.full_clean()
         product.save()
-
-        # Успешное сообщение
-        request.session['product_alert'] = {
-            'type': 'success',
-            'message': f"Товар '{product.name}' успешно добавлен!",
-        }
-
-
 
         return redirect(reverse('catalog:product_details', args=[product.pk]))
 
