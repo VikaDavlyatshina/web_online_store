@@ -3,43 +3,52 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from .models import Product, Contact, Category
+from django.views.generic import ListView, DetailView
 
 # Create your views here.
 
 
-def home(request):
-    """Контроллер Главной страницы"""
+class ProductListView(ListView):
+    model = Product
 
-    # order_by('-created_at') -> сортировка по убыванию даты (новые первыми)
-
-    all_products = Product.objects.order_by("-created_at")
-
-    # Вывод в консоль
-    print("Последние 5 товаров (вывод в консоль):")
-    for i, product in enumerate(all_products[:5], 1):
-        print(
-            f"{i}. {product.name}\n"
-            f"Цена: {product.purchase_price}\n"
-            f"Категория: {product.category.name if product.category else 'Без категории'}\n"
-            f"Создан: {product.created_at}\n"
-        )
-
-    # Создаем пагинатор: 6 товаров на страницу
-    paginator = Paginator(all_products, 6)
-
-    # Получаем номер страницы из GET-параметра
-    page_number = request.GET.get('page')
-
-    # Получаем объект страницы
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'page_obj': page_obj,
-         'paginator': paginator
-    }
+    ordering = ["-created_at"]
+    paginate_by = 6
 
 
-    return render(request, "catalog/home.html", context)
+
+# def home(request):
+#     """Контроллер Главной страницы"""
+#
+#     # order_by('-created_at') -> сортировка по убыванию даты (новые первыми)
+#
+#     all_products = Product.objects.order_by("-created_at")
+#
+#     # Вывод в консоль
+#     print("Последние 5 товаров (вывод в консоль):")
+#     for i, product in enumerate(all_products[:5], 1):
+#         print(
+#             f"{i}. {product.name}\n"
+#             f"Цена: {product.purchase_price}\n"
+#             f"Категория: {product.category.name if product.category else 'Без категории'}\n"
+#             f"Создан: {product.created_at}\n"
+#         )
+#
+#     # Создаем пагинатор: 6 товаров на страницу
+#     paginator = Paginator(all_products, 6)
+#
+#     # Получаем номер страницы из GET-параметра
+#     page_number = request.GET.get('page')
+#
+#     # Получаем объект страницы
+#     page_obj = paginator.get_page(page_number)
+#
+#     context = {
+#         'page_obj': page_obj,
+#          'paginator': paginator
+#     }
+#
+#
+#     return render(request, "catalog/product_list.html", context)
 
 
 def contacts(request):
@@ -116,15 +125,19 @@ def contacts(request):
 
     return render(request, "catalog/contacts.html", context)
 
-def product_details(request, pk):
-    """Контроллер страницы Товара"""
-    product = Product.objects.get(pk=pk)
+class ProductDetailView(DetailView):
+    model = Product
 
-    # Базовый контекст
-    context = {
-        'product': product
-    }
-    return render(request, "catalog/product_details.html", context)
+
+# def product_details(request, pk):
+#     """Контроллер страницы Товара"""
+#     product = Product.objects.get(pk=pk)
+#
+#     # Базовый контекст
+#     context = {
+#         'product': product
+#     }
+#     return render(request, "catalog/product_detail.html", context)
 
 def product_add(request):
     """Контроллер страницы Добавления товар"""
