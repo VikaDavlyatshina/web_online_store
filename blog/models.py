@@ -39,8 +39,8 @@ class BlogPost(models.Model):
     )
 
     views_count = models.PositiveIntegerField(
-        default=0,   # Поле для хранения просмотров
-        verbose_name="Количество публикаций"
+        default=0,         # Поле для хранения просмотров
+        verbose_name="Количество просмотров"
     )
 
     class Meta:
@@ -48,8 +48,8 @@ class BlogPost(models.Model):
         verbose_name_plural = "Записи блога"
         ordering = ['-created_at']
 
-        def __str__(self):
-            return self.title
+    def __str__(self):
+        return self.title
 
-        def get_absolute_url(self):
-            return reverse('blogpost_detail', kwargs={'pk': self.pk})
+    def get_absolute_url(self):
+        return reverse('blogpost_detail', kwargs={'pk': self.pk})
