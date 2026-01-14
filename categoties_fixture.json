@@ -1,14 +1,6 @@
 [
 {
     "model": "catalog.category",
-    "pk": 7,
-    "fields": {
-        "name": "Без категории",
-        "description": "Товары без указанной категории"
-    }
-},
-{
-    "model": "catalog.category",
     "pk": 8,
     "fields": {
         "name": "Смартфоны",

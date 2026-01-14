@@ -13,7 +13,7 @@ def get_default_category_id():
     category_model = apps.get_model("catalog", "Category")
     category, created = category_model.objects.get_or_create(
         name="Без категории",
-        defaults={"descriptions": "Товары без указанной категории"},
+        defaults={"description": "Товары без указанной категории"},
     )
     return category.id
 
