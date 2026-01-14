@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Подробно о товаре{% endblock %}
+{% block title %}{{ object.name }} | Skystore{% endblock %} <!-- Динамичный title(меняется от товара) -->
+{% block page_header %}{% endblock %} <!-- Убираем большую шапку -->
+
 {% load my_tags %}
 
 {% block content%}
 <div class="container">
+    <div class="text-center mb-5">
+        <h1 class="display-5">{{ object.name }}</h1>
+    </div>
     <div class="row align-items-stretch">
 
         <!-- ЛЕВАЯ КОЛОНКА: Картинка -->
@@ -12,10 +17,10 @@
             <div class="card fixed-card">
                 <!-- Блок с изображением товара -->
                 <div class="card-detail-img-container">
-                    {% if product.image %}
-                        <img src="{{ product.image | media_filter }}"
+                    {% if object.image %}
+                        <img src="{{ object.image | media_filter }}"
                              class="card-detail-img-auto"
-                             alt="{{ product.name }}">
+                             alt="{{ object.name }}">
                     {% else %}
                         <div class="no-image-placeholder">
                             <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
@@ -43,16 +48,16 @@
                     <!-- Заголовок -->
                     <h2 class="mb-3">Описание товара</h2>
 
-                    <h3 class="mb-4">{{ product.name }}</h3>
+                    <h3 class="mb-4">{{ object.name }}</h3>
 
                     <!-- Цена -->
                     <div class="product-price mb-4">
-                        <strong>Цена:</strong> {{product.purchase_price}} руб.
+                        <strong>Цена:</strong> {{object.purchase_price}} руб.
                     </div>
 
                     <!-- Описание -->
                     <div class="description-text mb-4">
-                        {{ product.description|default:"Описание отсутствует"}}
+                        {{ object.description|default:"Описание отсутствует"}}
                     </div>
 
                     <!-- Детали товара -->
@@ -60,11 +65,11 @@
                         <ul class="list-unstyled mb-4">
                             <li class="mb-2">
                                 <strong>Категория:</strong>
-                                {{ product.category.name|default:"Без категории"}}
+                                {{ object.category.name|default:"Без категории"}}
                             </li>
                             <li class="mb-2">
                                 <strong>Дата добавления:</strong>
-                                {{ product.created_at|date:"d.m.Y" }}
+                                {{ object.created_at|date:"d.m.Y" }}
                             </li>
                         </ul>
 
