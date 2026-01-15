@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 
-{% block title %}Наш блог | Skystore{% endblock %}
+{% block title %}Skystore блог | Skystore{% endblock %}
+
+{% block page_title %}Skystore блог{% endblock %}
+
+<!-- Меняем описание -->
+{% block page_description %}
+    Делимся мыслями, идеями и полезными материалами
+{% endblock %}
+
 
 {% block content %}
 
-        <!-- Карточки -->
-        <div class="album py-5 bg-body-tertiary">
-            <div class="container">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+<div class="container py-5">
 
-                    <!-- Карточка 1 -->
-                    <div class="col">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+            <!-- Карточка 1 -->
+            <div class="col">
                         <div class="card shadow-sm">
                             <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
                                 <rect width="100%" height="100%" fill="#55595c"></rect>
@@ -20,8 +27,16 @@
                                 <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Смотреть</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Редактировать</button>
+
+                                        <a href="{% url 'catalog:product_add' %}"
+                                           class="btn btn-sm btn-outline-secondary">
+                                        Смотреть
+                                        </a>
+                                        <a href="{% url 'catalog:product_add' %}"
+                                           class="btn btn-sm btn-outline-secondary">
+                                        Редактировать
+                                        </a>
+
                                     </div>
                                     <small class="text-body-secondary">9 мин</small>
                                 </div>

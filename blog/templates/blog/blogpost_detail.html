@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.name }} | Skystore блог{% endblock %} <!-- Динамичный title(меняется от поста) -->
+{% block page_header %}{% endblock %} <!-- Убираем большую шапку -->
+
+{% block content%}
+<!-- Карточка 1 -->
+<div class="col">
+    <div class="card shadow-sm">
+        <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
+            <rect width="100%" height="100%" fill="#55595c"></rect>
+            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение 1</text>
+        </svg>
+        <div class="card-body">
+            <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+
+                    <a href="{% url 'catalog:product_list' %}"
+                       class="btn btn-sm btn-outline-secondary">
+                        Смотреть
+                    </a>
+                    <a href="{% url 'catalog:product_add' %}"
+                       class="btn btn-sm btn-outline-secondary">
+                        Редактировать
+                    </a>
+
+                </div>
+                <small class="text-body-secondary">9 мин</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

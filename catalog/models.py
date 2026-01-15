@@ -1,4 +1,5 @@
 from django.db import models
+#from django.urls import reverse
 from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator, MinLengthValidator
 
@@ -41,6 +42,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    # def get_absolute_url(self):
+    #     """Получение абсолютной ссылки для категории"""
+    #     return reverse('category_products', kwargs={'pk': self.pk})
 
 
 class Product(models.Model):
@@ -100,6 +105,10 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.purchase_price} руб."
+
+    # def get_absolute_url(self):
+    #     """Получение абсолютной ссылки для товара"""
+    #     return reverse('product_detail', kwargs={'pk': self.pk})
 
 
 class Contact(models.Model):

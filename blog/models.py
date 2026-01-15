@@ -39,8 +39,9 @@ class BlogPost(models.Model):
     )
 
     views_count = models.PositiveIntegerField(
-        default=0,         # Поле для хранения просмотров
-        verbose_name="Количество просмотров"
+        verbose_name="Количество просмотров",
+        help_text="Укажите количество просмотров",
+        default=0,  # Поле для хранения просмотров
     )
 
     class Meta:
@@ -52,4 +53,5 @@ class BlogPost(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('blogpost_detail', kwargs={'pk': self.pk})
+
+        return reverse('blog:blogpost_detail', kwargs={'pk': self.pk})
