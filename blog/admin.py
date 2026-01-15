@@ -19,9 +19,8 @@ class BlogPostAdmin(admin.ModelAdmin):
 
     # Какие поля показывать в списке
     list_display = ('title',
-                    'view_on_site_link',
                     'is_published',
-                    'views_count'
+                    'views_count',
                     'created_at',
                     )
     # Фильтры справа
@@ -33,6 +32,10 @@ class BlogPostAdmin(admin.ModelAdmin):
     # Редактируемые прямо в списке
     list_editable = ('is_published',)
 
+    # Пагинация
+    list_per_page = 20
+
     # Порядок сортировки по умолчанию
     ordering = ('-created_at',)
+
 

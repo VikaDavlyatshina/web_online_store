@@ -6,82 +6,56 @@
 
 <!-- Меняем описание -->
 {% block page_description %}
-    Делимся мыслями, идеями и полезными материалами
+    Полезные статьи, обзоры и интересные материалы
 {% endblock %}
 
 
 {% block content %}
-
-<div class="container py-5">
-
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
-            <!-- Карточка 1 -->
-            <div class="col">
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
-                                <rect width="100%" height="100%" fill="#55595c"></rect>
-                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение 1</text>
-                            </svg>
-                            <div class="card-body">
-                                <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
+        <!-- Карточка статьи -->
+        {% for post in posts %}
+        <div class="col">
+            <div class="card shadow-sm">
 
-                                        <a href="{% url 'catalog:product_add' %}"
-                                           class="btn btn-sm btn-outline-secondary">
-                                        Смотреть
-                                        </a>
-                                        <a href="{% url 'catalog:product_add' %}"
-                                           class="btn btn-sm btn-outline-secondary">
-                                        Редактировать
-                                        </a>
+                <div class="card-img-container">
+                    {% if post.preview %}
+                    <img src="{{ post.preview.url }}">
+                    {% else %}
+                    <div class="no-image-placeholder">
+                        <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                        <br>
+                        <span>Нет изображения</span>
+                    </div>
+                    {% endif %}
+                </div>
 
-                                    </div>
-                                    <small class="text-body-secondary">9 мин</small>
-                                </div>
-                            </div>
+                <div class="card-body">
+                    <p class="card-text">{{post.title}}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="btn-group">
+
+                            <!-- Кнопки  -->
+                            <a href="{{ post.get_absolute_url }}"
+                               class="btn btn-sm btn-outline-secondary">
+                                Смотреть
+                            </a>
+                            <a href="{% url 'blog:blogpost_update' pk=post.pk %}"
+                               class="btn btn-sm btn-outline-secondary">
+                                ✏️ Редактировать
+                            </a>
                         </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
-                                <rect width="100%" height="100%" fill="#55595c"></rect>
-                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение 1</text>
-                            </svg>
-                            <div class="card-body">
-                                <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Смотреть</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Редактировать</button>
-                                    </div>
-                                    <small class="text-body-secondary">9 мин</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
-                                <rect width="100%" height="100%" fill="#55595c"></rect>
-                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение 1</text>
-                            </svg>
-                            <div class="card-body">
-                                <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Смотреть</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Редактировать</button>
-                                    </div>
-                                    <small class="text-body-secondary">9 мин</small>
-                                </div>
-                            </div>
-                        </div>
+                        <small class="text-body-secondary">9 мин</small>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+        {% endfor %}
+    </div>
+</div>
 
+</div>
  {% endblock %}

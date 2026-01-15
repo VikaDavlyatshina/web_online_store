@@ -57,4 +57,4 @@ class BlogPostUpdateView(UpdateView):
 
 class BlogPostDeleteView(DeleteView):
     model = BlogPost
-    success_url = reverse_lazy('blog:blogpost_list')
+    success_url = reverse_lazy('blog:blog_list')

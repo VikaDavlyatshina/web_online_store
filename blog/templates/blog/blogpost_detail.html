@@ -4,25 +4,39 @@
 {% block page_header %}{% endblock %} <!-- Убираем большую шапку -->
 
 {% block content%}
+
 <!-- Карточка 1 -->
 <div class="col">
     <div class="card shadow-sm">
-        <svg class="bd-placeholder-img card-img-top" width="100%" height="225">
-            <rect width="100%" height="100%" fill="#55595c"></rect>
-            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Изображение 1</text>
-        </svg>
+
+        <!-- Превью(картинка) -->>
+        <div class="card-img-container">
+            {% if post.preview %}
+            <img src="{{ post.preview.url }}">
+            {% else %}
+            <div class="no-image-placeholder">
+                <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                </svg>
+                <br>
+                <span>Нет изображения</span>
+            </div>
+            {% endif %}
+        </div>
+
+
         <div class="card-body">
-            <p class="card-text">Это карточка с описанием. Вы можете изменить текст и изображение.</p>
+            <p class="card-text">{{post.title}}</p>
             <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
 
-                    <a href="{% url 'catalog:product_list' %}"
+                    <a href="{% url 'blog:blog_list' %}"
                        class="btn btn-sm btn-outline-secondary">
-                        Смотреть
+                        Назад
                     </a>
-                    <a href="{% url 'catalog:product_add' %}"
+                    <a href="{% url 'blog:blogpost_delete' post.pk %}"
                        class="btn btn-sm btn-outline-secondary">
-                        Редактировать
+                        Удалить
                     </a>
 
                 </div>
