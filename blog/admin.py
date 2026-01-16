@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from blog.models import BlogPost
 
-
 # Register your models here.
 
 
@@ -18,24 +17,23 @@ class BlogPostAdmin(admin.ModelAdmin):
     """
 
     # Какие поля показывать в списке
-    list_display = ('title',
-                    'is_published',
-                    'views_count',
-                    'created_at',
-                    )
+    list_display = (
+        "title",
+        "is_published",
+        "views_count",
+        "created_at",
+    )
     # Фильтры справа
-    list_filter = ('is_published', 'created_at')
+    list_filter = ("is_published", "created_at")
 
     # Поиск по этим полям
-    search_fields = ('title', 'content')
+    search_fields = ("title", "content")
 
     # Редактируемые прямо в списке
-    list_editable = ('is_published',)
+    list_editable = ("is_published",)
 
     # Пагинация
     list_per_page = 20
 
     # Порядок сортировки по умолчанию
-    ordering = ('-created_at',)
-
-
+    ordering = ("-created_at",)

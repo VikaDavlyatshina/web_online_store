@@ -6,70 +6,14 @@
 
 <!-- Меняем описание -->
 {% block page_description %}
-    Свяжитесь с нами любым удобным способом. Мы всегда на связи!
+Свяжитесь с нами любым удобным способом. Мы всегда на связи!
 {% endblock %}
 
 {% block content %}
 
 <div class="container">
-    <!-- БЛОК 1: Контакты из админки -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card mb-4 box-shadow">
-                <div class="card-header">
-                    <!-- Шапка карточки -->
-                    <h4 class="my-0 font-weight-normal">📞 Контакты из базы данных</h4>
-                </div>
-                <div class="card-body">
 
-                    <!-- Тело карточки -->
-                    {% if contacts %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Имя</th>
-                                    <th>Телефон</th>
-                                    <th>Сообщение</th>
-                                    <th>Дата создания</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Тело таблицы -->
-                                {% for contact in contacts %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td><strong>{{ contact.name }}</strong></td>
-                                    <td>{{ contact.phone }}</td>
-                                    <td>
-                                        <span class="text-muted"
-                                              data-bs-toggle="tooltip"
-                                              title="{{ contact.message }}">
-                                            {{ contact.message|truncatechars:50 }}
-                                        </span>
-                                    </td>
-                                    <td>{{ contact.created_at|date:"d.m.Y H:i" }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <p class="text-muted mt-2">
-                            <small>Всего контактов: {{ contacts|length }}</small>
-                        </p>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-info text-center">
-                        <h5 class="alert-heading">Контактов пока нет</h5>
-                        <p class="mb-0">Добавьте контакты используя форму ниже</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- БЛОК 2: Основная информация и форма -->
+    <!-- БЛОК 1: Основная информация и форма -->
     <div class="row text-start">
         <!--КОЛОНКА 1: Информация о компании -->
         <div class="col-lg-9 col-md-6 col-sm-12">
@@ -125,7 +69,8 @@
                         <div class="mb-3">
                             <label for="message">Сообщение</label>
                             <textarea name="message" class="form-control" id="message"
-                                      placeholder="Ваше сообщение" required>{{ form_data.message|default:'' }}</textarea>
+                                      placeholder="Ваше сообщение"
+                                      required>{{ form_data.message|default:'' }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block btn-outline-primary w-100">
                             Отправить
@@ -157,13 +102,13 @@
 
                 <!-- Дополнительный текст -->
                 {% if alert.type == 'success' %}
-                    <p>Мы свяжемся с вами в ближайшее время.</p>
+                <p>Мы свяжемся с вами в ближайшее время.</p>
                 {% else %}
-                    <p>Попробуйте отправить сообщение снова.</p>
+                <p>Попробуйте отправить сообщение снова.</p>
                 {% endif %}
 
                 <hr>
-                 <!-- Кнопка закрытия -->
+                <!-- Кнопка закрытия -->
                 <button type="button" class="btn {% if alert.type == 'success' %}btn-outline-success{% else %}
                 btn-outline-danger{% endif %} btn-sm"
                         onclick="this.parentElement.parentElement.style.display='none'">
@@ -173,6 +118,63 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- БЛОК 1: Контакты из админки -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <!-- Шапка карточки -->
+                    <h4 class="my-0 font-weight-normal">📞 Контакты из базы данных</h4>
+                </div>
+                <div class="card-body">
+
+                    <!-- Тело карточки -->
+                    {% if contacts %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Имя</th>
+                                <th>Телефон</th>
+                                <th>Сообщение</th>
+                                <th>Дата создания</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Тело таблицы -->
+                            {% for contact in contacts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ contact.name }}</strong></td>
+                                <td>{{ contact.phone }}</td>
+                                <td>
+                                        <span class="text-muted"
+                                              data-bs-toggle="tooltip"
+                                              title="{{ contact.message }}">
+                                            {{ contact.message|truncatechars:50 }}
+                                        </span>
+                                </td>
+                                <td>{{ contact.created_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <p class="text-muted mt-2">
+                            <small>Всего контактов: {{ contacts|length }}</small>
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <h5 class="alert-heading">Контактов пока нет</h5>
+                        <p class="mb-0">Добавьте контакты используя форму ниже</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

@@ -42,9 +42,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "created_at",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="Дата создания"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="Дата создания"),
                 ),
                 (
                     "is_published",
@@ -52,9 +50,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "views_count",
-                    models.PositiveIntegerField(
-                        default=0, verbose_name="Количество просмотров"
-                    ),
+                    models.PositiveIntegerField(default=0, verbose_name="Количество просмотров"),
                 ),
             ],
             options={

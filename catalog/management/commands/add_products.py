@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from catalog.models import Product, Category
+
+from catalog.models import Category, Product
 
 
 class Command(BaseCommand):
@@ -23,19 +24,13 @@ class Command(BaseCommand):
 
         # 4. Создаём категории в базе
         for category_data in categories_data:
-            category, created = Category.objects.get_or_create(
-                name=category_data["name"], defaults=category_data
-            )
+            category, created = Category.objects.get_or_create(name=category_data["name"], defaults=category_data)
             categories[category.name] = category  # Сохраняем словарь
 
             if created:
-                self.stdout.write(
-                    self.style.SUCCESS(f"Создана категория: {category.name}")
-                )
+                self.stdout.write(self.style.SUCCESS(f"Создана категория: {category.name}"))
             else:
-                self.stdout.write(
-                    self.style.WARNING(f"Категория уже существует: {category.name}")
-                )
+                self.stdout.write(self.style.WARNING(f"Категория уже существует: {category.name}"))
 
         # 5. Создаём данные для товаров
         products_data = [
@@ -80,26 +75,14 @@ class Command(BaseCommand):
         # 6. Создаём товары в базе
         created_count = 0
         for product_data in products_data:
-            product, created = Product.objects.get_or_create(
-                name=product_data["name"], defaults=product_data
-            )
+            product, created = Product.objects.get_or_create(name=product_data["name"], defaults=product_data)
             if created:
                 created_count += 1
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"Создан товар: {product.name} - {product.purchase_price} руб."
-                    )
-                )
+                self.stdout.write(self.style.SUCCESS(f"Создан товар: {product.name} - {product.purchase_price} руб."))
             else:
-                self.stdout.write(
-                    self.style.WARNING(f"Товар уже существует: {product.name}")
-                )
+                self.stdout.write(self.style.WARNING(f"Товар уже существует: {product.name}"))
 
         # 7. Выводим итоги
         self.stdout.write(self.style.SUCCESS(f"ИТОГО: создано {created_count} товаров"))
-        self.stdout.write(
-            self.style.SUCCESS(f"Всего категорий: {Category.objects.count()}")
-        )
-        self.stdout.write(
-            self.style.SUCCESS(f"Всего товаров: {Product.objects.count()}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Всего категорий: {Category.objects.count()}"))
+        self.stdout.write(self.style.SUCCESS(f"Всего товаров: {Product.objects.count()}"))

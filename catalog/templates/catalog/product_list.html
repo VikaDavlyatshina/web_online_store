@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load my_tags %}
+{% load catalog_tags %}
 {% block title %}Skystore - интернет-магазин{% endblock %}
 
 {% block content %}
@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row align-items-stretch">
 
-        {% for product in page_obj %}
+        {% for product in product_list %}
         <div class="col-lg-4 col-md-6 col-sm-12 product-card">
             <div class="card h-100 box-shadow">
 
@@ -18,9 +18,12 @@
 
                 <!-- Блок с изображением товара -->
                 <div class="card-img-container">
-                    {% if product.image %}
-                    <img src="{{ product.image | media_filter }}">
+                    <!-- Используем результат media_filter для проверки -->
+                    {% with img_url=product.image|media_filter %}
+                    {% if img_url %}
+                    <img src="{{ img_url }}">
                     {% else %}
+                    <!-- Если media_filter вернул None - показываем заглушку -->
                     <div class="no-image-placeholder">
                         <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
@@ -29,6 +32,7 @@
                         <span>Нет изображения</span>
                     </div>
                     {% endif %}
+                    {% endwith %}
                 </div>
 
                 <!-- Тело карточки -->
@@ -54,7 +58,7 @@
                                 <small class="text-muted"
                                        data-bs-toggle="tooltip"
                                        title="{{ product.description }}">
-                                    {{ product.description|truncatechars:100 }}</small>
+                                    {{ product.description|truncatechars:100|default:"Описание не указано"}}</small>
                             </li>
                             {% endif %}
                         </ul>
@@ -62,7 +66,7 @@
 
                     <!-- Кнопка "Подробнее" -->
                     <div class="product-actions mt-auto">
-                        <a href="{% url 'catalog:product_details' pk=product.pk %}"
+                        <a href="{{ product.get_absolute_url }}"
                            class="btn btn-lg btn-primary w-100">
                             Подробнее
                         </a>
