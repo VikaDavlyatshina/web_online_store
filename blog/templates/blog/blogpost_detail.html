@@ -1,48 +1,82 @@
 {% extends 'base.html' %}
+{% load blog_tags %}
+{% load static %}
 
-{% block title %}{{ object.name }} | Skystore блог{% endblock %} <!-- Динамичный title(меняется от поста) -->
-{% block page_header %}{% endblock %} <!-- Убираем большую шапку -->
+{% block title %}{{ post.title }} | Блог Skystore{% endblock %}
 
-{% block content%}
+<!-- ПОДКЛЮЧАЕМ СТИЛИ БЛОГА -->
+{% block extra_css %}
+<link href="{% static 'css/blog.css' %}" rel="stylesheet">
+{% endblock %}
 
-<!-- Карточка 1 -->
-<div class="col">
-    <div class="card shadow-sm">
+{% block page_header %}{% endblock %}
 
-        <!-- Превью(картинка) -->>
-        <div class="card-img-container">
-            {% if post.preview %}
-            <img src="{{ post.preview.url }}">
-            {% else %}
-            <div class="no-image-placeholder">
-                <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                </svg>
-                <br>
-                <span>Нет изображения</span>
-            </div>
-            {% endif %}
-        </div>
+{% block content %}
+<div class="container">
+    <!-- Навигация) -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'blog:blog_list' %}">Блог</a>
+            </li>
+            <li class="breadcrumb-item active">{{ post.title|truncatechars:30 }}</li>
+        </ol>
+    </nav>
 
+    <!-- СТАТЬЯ В КОНТЕЙНЕРЕ blog-article -->
+    <article class="blog-article">
 
-        <div class="card-body">
-            <p class="card-text">{{post.title}}</p>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
+        <!-- ЗАГОЛОВОК СТАТЬИ -->
+        <h1 class="mb-4">{{ post.title }}</h1>
 
-                    <a href="{% url 'blog:blog_list' %}"
-                       class="btn btn-sm btn-outline-secondary">
-                        Назад
-                    </a>
-                    <a href="{% url 'blog:blogpost_delete' post.pk %}"
-                       class="btn btn-sm btn-outline-secondary">
-                        Удалить
-                    </a>
-
-                </div>
-                <small class="text-body-secondary">9 мин</small>
+        <!-- МЕТА-ИНФОРМАЦИЯ (дата, просмотры, статус) -->
+        <div class="blog-meta mb-4">
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                <span class="text-muted">
+                    📅 {{ post.created_at|date:"d E Y" }}
+                </span>
+                <span class="badge bg-primary">
+                    👁 {{ post.views_count }} просмотров
+                </span>
             </div>
         </div>
-    </div>
+
+        <!-- ИЗОБРАЖЕНИЕ СТАТЬИ (если есть) -->
+        {% with img_url=post.preview|media_filter %}
+          {% if img_url %}
+        <div class="mb-4 text-center">
+            <img src="{{ img_url }}"
+                 alt="{{ post.title }}"
+                 class="img-fluid rounded"
+                 style="max-height: 400px;">
+        </div>
+        {% endif %}
+        {% endwith %}
+
+
+        <!-- КОНТЕНТ СТАТЬИ В КОНТЕЙНЕРЕ blog-content -->
+        <div class="blog-content mb-5">
+            {{ post.content|linebreaks }}
+        </div>
+
+        <!-- КНОПКА НАЗАД-->
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- КНОПКА НАЗАД (для всех) -->
+            <a href="{% url 'blog:blog_list' %}"
+               class="btn btn-outline-secondary">
+                ← Назад к блогу
+            </a>
+            <a href="{% url 'blog:blogpost_delete' pk=post.pk %}"
+               class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-book-open"></i> 🗑️  Удалить
+            </a>
+            <a href="{% url 'blog:blogpost_update' pk=post.pk %}"
+               class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-book-open"></i> ️️ ✏️ Редактировать
+            </a>
+
+        </div>
+
+    </article>
 </div>
 {% endblock %}

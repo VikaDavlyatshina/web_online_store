@@ -71,7 +71,7 @@ class Product(models.Model):
         null=True,
         verbose_name="Фото",
         help_text="Загрузите фото товара",
-    )  #
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_DEFAULT,  # При удалении категории, у товара category станет DEFAULT

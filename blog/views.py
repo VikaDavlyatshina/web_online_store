@@ -1,15 +1,16 @@
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from .models import BlogPost
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
-
 
 # Create your views here.
 
+
 class BlogPostListView(ListView):
     model = BlogPost
-    template_name = 'blog/blog_list.html'
-    context_object_name = 'posts'   # Контекстное имя, чтобы использовать в шаблонах
+    template_name = "blog/blog_list.html"
+    context_object_name = "posts"  # Контекстное имя, чтобы использовать в шаблонах
+    paginate_by = 6
 
     def get_queryset(self):
         """
@@ -19,10 +20,11 @@ class BlogPostListView(ListView):
 
         return super().get_queryset().filter(is_published=True)
 
+
 class BlogPostDetailView(DetailView):
     model = BlogPost
-    template_name = 'blog/blogpost_detail.html'
-    context_object_name = 'post'  # Контекстное имя, чтобы использовать в шаблонах
+    template_name = "blog/blogpost_detail.html"
+    context_object_name = "post"  # Контекстное имя, чтобы использовать в шаблонах
 
     def get_object(self, queryset=None):
         """
@@ -35,26 +37,28 @@ class BlogPostDetailView(DetailView):
 
         # Увеличиваем счетчик просмотров
         post.views_count += 1
-        post.save(update_fields=['views_count'])
+        post.save(update_fields=["views_count"])
 
         # Сохраняем для использования в других методах
         self.object = post
 
         return post
 
+
 class BlogPostCreateView(CreateView):
     model = BlogPost
-    fields = ('title', 'content', 'preview', 'is_published')
-    success_url = reverse_lazy('blog:blog_list')
+    fields = ("title", "content", "preview", "is_published")
+    success_url = reverse_lazy("blog:blog_list")
+
 
 class BlogPostUpdateView(UpdateView):
     model = BlogPost
-    fields = ('title', 'content', 'preview', 'is_published')
+    fields = ("title", "content", "preview", "is_published")
 
     def get_success_url(self):
-        return reverse_lazy('blog:blogpost_detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy("blog:blogpost_detail", kwargs={"pk": self.object.pk})
 
 
 class BlogPostDeleteView(DeleteView):
     model = BlogPost
-    success_url = reverse_lazy('blog:blog_list')
+    success_url = reverse_lazy("blog:blog_list")
