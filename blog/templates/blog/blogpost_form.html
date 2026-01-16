@@ -221,51 +221,70 @@
 
 <!-- СКРИПТ ДЛЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЯ И ПОДСЧЕТА СЛОВ -->
 <script>
-    // ФУНКЦИЯ ДЛЯ ПОДСЧЕТА СЛОВ И ВРЕМЕНИ ЧТЕНИЯ
-    function updateWordCount() {
-        const textarea = document.getElementById('id_content');
-        const wordCountElement = document.getElementById('wordCount');
-        const readingTimeElement = document.getElementById('readingTime');
+    // 1. ФУНКЦИЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЯ
+    function previewImage(input) {
+        // Находим элемент превью
+        var preview = document.getElementById('imagePreview');
 
-        if (textarea && wordCountElement && readingTimeElement) {
-            const text = textarea.value;
+        // Проверяем, выбран ли файл
+        if (input.files && input.files[0]) {
+            // Создаем FileReader
+            var reader = new FileReader();
 
-            // Подсчет слов (простая логика)
-            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-            const wordCount = words.length;
+            // Когда файл прочитан
+            reader.onload = function(e) {
+                // Устанавливаем картинку
+                preview.src = e.target.result;
+                // Показываем превью
+                preview.style.display = 'block';
+            };
 
-            // Расчет времени чтения (200 слов в минуту)
-            const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-
-            wordCountElement.textContent = wordCount;
-            readingTimeElement.textContent = readingTime;
+            // Читаем файл
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            // Скрываем превью если файл отменен
+            preview.style.display = 'none';
         }
     }
 
-    // ОБРАБОТЧИК СОБЫТИЙ ДЛЯ ТЕКСТОВОГО ПОЛЯ
+    // 2. ФУНКЦИЯ ПОДСЧЕТА СЛОВ
+    function updateWordCount() {
+        var textarea = document.getElementById('id_content');
+        var wordCount = document.getElementById('wordCount');
+        var readingTime = document.getElementById('readingTime');
+
+        if (textarea && wordCount && readingTime) {
+            // Считаем слова (разделяем пробелами)
+            var words = textarea.value.trim().split(/\s+/);
+            var count = words.length;
+            if (words[0] === '') count = 0; // Если текст пустой
+
+            // Обновляем на странице
+            wordCount.textContent = count;
+            readingTime.textContent = Math.max(1, Math.ceil(count / 200));
+        }
+    }
+
+    // 3. ВСЕ НАСТРАИВАЕМ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
     document.addEventListener('DOMContentLoaded', function() {
-        const textarea = document.getElementById('id_content');
+        // А) Настраиваем подсчет слов
+        var textarea = document.getElementById('id_content');
         if (textarea) {
-            // Считаем при загрузке
-            updateWordCount();
-
-            // И при каждом изменении
-            textarea.addEventListener('input', updateWordCount);
-
-            // Автофокус на поле заголовка если оно пустое
-            const titleField = document.getElementById('id_title');
-            if (titleField && !titleField.value.trim()) {
-                titleField.focus();
-            }
+            updateWordCount(); // Считаем сразу
+            textarea.addEventListener('input', updateWordCount); // И при каждом изменении
         }
 
-        // Показываем текущее изображение если оно есть
-        {% if object and object.preview %}
-        const previewImg = document.getElementById('imagePreview');
-        if (previewImg) {
-            previewImg.src = "{{ object.preview.url }}";
+        // Б) Автофокус на заголовке если пусто
+        var title = document.getElementById('id_title');
+        if (title && title.value === '') {
+            title.focus();
         }
-        {% endif %}
+
+        // В) Гарантированно скрываем превью при загрузке
+        var preview = document.getElementById('imagePreview');
+        if (preview) {
+            preview.style.display = 'none';
+        }
     });
 </script>
 {% endblock %}
