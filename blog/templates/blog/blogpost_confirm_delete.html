@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Удаление статьи "{{ object.title }}" | Блог Skystore{% endblock %}
+
+<!-- ПОДКЛЮЧАЕМ СТИЛИ БЛОГА -->
+{% block extra_css %}
+<link href="{% static 'css/blog.css' %}" rel="stylesheet">
+<style>
+    /* СТИЛИ ДЛЯ СТРАНИЦЫ УДАЛЕНИЯ */
+    .delete-confirmation {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .delete-warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .delete-warning-icon {
+        color: #856404;
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
+
+    .article-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .article-info-item {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .article-info-label {
+        font-weight: 600;
+        min-width: 120px;
+        color: #495057;
+    }
+
+    .article-info-value {
+        color: #6c757d;
+    }
+
+    /* КНОПКИ */
+    .btn-delete {
+        background: linear-gradient(to right, #dc3545, #c82333);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(to right, #c82333, #bd2130);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-cancel {
+        background-color: #6c757d;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- ХЛЕБНЫЕ КРОШКИ -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'blog:blog_list' %}">Блог</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ object.get_absolute_url }}">{{ object.title|truncatechars:30 }}</a>
+            </li>
+            <li class="breadcrumb-item active">Удаление</li>
+        </ol>
+    </nav>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="delete-confirmation">
+
+        <!-- ЗАГОЛОВОК -->
+        <div class="text-center mb-4">
+            <h1 class="h2 text-danger">
+                ⚠️ Удаление статьи
+            </h1>
+            <p class="lead">
+                Вы собираетесь удалить статью
+            </p>
+        </div>
+
+        <!-- ИНФОРМАЦИЯ О СТАТЬЕ -->
+        <div class="article-info">
+            <h5 class="mb-3">Информация о статье:</h5>
+
+            <div class="article-info-item">
+                <span class="article-info-label">📌 Заголовок:</span>
+                <span class="article-info-value">{{ object.title }}</span>
+            </div>
+
+            <div class="article-info-item">
+                <span class="article-info-label">📅 Дата создания:</span>
+                <span class="article-info-value">{{ object.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+
+            <div class="article-info-item">
+                <span class="article-info-label">👁 Просмотры:</span>
+                <span class="article-info-value">{{ object.views_count }}</span>
+            </div>
+
+            <div class="article-info-item">
+                <span class="article-info-label">📄 Статус: </span>
+                <span class="article-info-value">
+                    {% if object.is_published %}
+                    <span class="badge bg-success">Опубликована</span>
+                    {% else %}
+                    <span class="badge bg-warning">Черновик</span>
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if object.preview %}
+            <div class="article-info-item">
+                <span class="article-info-label">🖼️ Изображение: </span>
+                <span class="article-info-value">
+                    Есть <small class="text-muted">(будет удалено)</small>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ПРЕДУПРЕЖДЕНИЕ -->
+        <div class="delete-warning d-flex align-items-start">
+            <div class="delete-warning-icon">⚠️</div>
+            <div>
+                <h6 class="mb-2" style="color: #856404;">Внимание! Это действие необратимо</h6>
+                <p class="mb-0" style="color: #856404;">
+                    После удаления статью <strong>невозможно будет восстановить</strong>.
+                    Все данные, включая изображения и статистику, будут удалены навсегда.
+                </p>
+            </div>
+        </div>
+
+        <!-- ФОРМА УДАЛЕНИЯ -->
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+
+            <div class="text-center">
+                <p class="mb-4">
+                    <strong>Вы уверены, что хотите удалить статью "{{ object.title }}"?</strong>
+                </p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <!-- КНОПКА ОТМЕНЫ -->
+                    <a href="{% url 'blog:blog_list' %}" class="btn btn-cancel text-white">
+                        ← Нет, вернуться
+                    </a>
+
+                    <!-- КНОПКА УДАЛЕНИЯ -->
+                    <button type="submit" class="btn btn-delete text-white">
+                        🗑️ Да, удалить статью
+                    </button>
+                </div>
+
+                <p class="text-muted small mt-4">
+                    Нажав "Да, удалить статью", вы подтверждаете удаление
+                </p>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

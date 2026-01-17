@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}
+        Редактирование статьи "{{ object.title }}" | Блог Skystore
+    {% else %}
+        Создание новой статьи | Блог Skystore
+    {% endif %}
+{% endblock %}
+
+<!-- ПОДКЛЮЧАЕМ СТИЛИ БЛОГА -->
+{% block extra_css %}
+<link href="{% static 'css/blog.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- ХЛЕБНЫЕ КРОШКИ -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'blog:blog_list' %}">Блог</a>
+            </li>
+            <li class="breadcrumb-item active">
+                {% if object %}
+                    Редактирование статьи
+                {% else %}
+                    Создание статьи
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ЗАГОЛОВОК ФОРМЫ -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6">
+                {% if object %}
+                    ✏️ Редактирование статьи
+                {% else %}
+                    📝 Создание новой статьи
+                {% endif %}
+            </h1>
+            <p class="text-muted">
+                {% if object %}
+                    Изменение статьи "{{ object.title }}"
+                {% else %}
+                    Заполните форму ниже, чтобы опубликовать новую статью
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- ФОРМА -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form class="blog-form" method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- СООБЩЕНИЯ ОБ ОШИБКАХ ФОРМЫ -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger mb-4">
+                    <h5 class="alert-heading">Ошибки в форме:</h5>
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- ПОЛЕ: ЗАГОЛОВОК -->
+                <div class="mb-4">
+                    <label for="id_title" class="form-label">
+                        📌 Заголовок статьи
+                    </label>
+                    <input type="text"
+                           name="title"
+                           id="id_title"
+                           class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                           value="{{ form.title.value|default:'' }}"
+                           maxlength="200"
+                           required
+                           placeholder="Введите заголовок статьи">
+                    <div class="form-text">
+                        Не более 200 символов. Заголовок должен быть кратким и информативным.
+                    </div>
+                    {% if form.title.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.title.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ПОЛЕ: СОДЕРЖИМОЕ -->
+                <div class="mb-4">
+                    <label for="id_content" class="form-label">
+                        📄 Содержимое статьи
+                    </label>
+                    <textarea name="content"
+                              id="id_content"
+                              class="form-control {% if form.content.errors %}is-invalid{% endif %}"
+                              rows="15"
+                              required
+                              placeholder="Напишите содержание вашей статьи здесь...">{{ form.content.value|default:'' }}</textarea>
+                    <div class="form-text">
+                        Поддерживает HTML-разметку. Используйте заголовки, списки, жирный/курсив для форматирования.
+                    </div>
+                    {% if form.content.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.content.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                    <!-- СЧЕТЧИК СЛОВ -->
+                    <div class="mt-2 text-muted small">
+                        Слов: <span id="wordCount">0</span> | Примерное время чтения: <span id="readingTime">0 мин</span>
+                    </div>
+                </div>
+
+                <!-- ПОЛЕ: ПРЕВЬЮ (ИЗОБРАЖЕНИЕ) -->
+                <div class="mb-4">
+                    <label for="id_preview" class="form-label">
+                        🖼️ Изображение статьи (превью)
+                    </label>
+
+                    {% if object and object.preview %}
+                    <!-- ТЕКУЩЕЕ ИЗОБРАЖЕНИЕ (если редактируем) -->
+                    <div class="mb-3">
+                        <p class="text-muted small">Текущее изображение:</p>
+                        <img src="{{ object.preview.url }}"
+                             alt="Текущее превью"
+                             class="img-thumbnail"
+                             style="max-width: 300px; max-height: 200px;">
+                        <div class="form-check mt-2">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="preview-clear"
+                                   id="preview-clear_id">
+                            <label class="form-check-label text-danger" for="preview-clear_id">
+                                Удалить текущее изображение
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- ПОЛЕ ДЛЯ ЗАГРУЗКИ НОВОГО ИЗОБРАЖЕНИЯ -->
+                    <input type="file"
+                           name="preview"
+                           id="id_preview"
+                           class="form-control {% if form.preview.errors %}is-invalid{% endif %}"
+                           accept="image/*"
+                           onchange="previewImage(this)">
+                    <div class="form-text">
+                        Рекомендуемый размер: 1200×600px. Поддерживаются JPG, PNG, GIF.
+                    </div>
+
+                    <!-- ПРЕДПРОСМОТР ИЗОБРАЖЕНИЯ -->
+                    <img id="imagePreview"
+                         class="image-preview"
+                         alt="Предпросмотр изображения"
+                         style="display: none; max-width: 300px; max-height: 200px;">
+
+                    {% if form.preview.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.preview.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ПОЛЕ: СТАТУС ПУБЛИКАЦИИ -->
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               name="is_published"
+                               id="id_is_published"
+                               class="form-check-input {% if form.is_published.errors %}is-invalid{% endif %}"
+                               {% if form.is_published.value %}checked{% endif %}>
+                        <label class="form-check-label" for="id_is_published">
+                            📢 Опубликовать статью сразу
+                        </label>
+                        <div class="form-text">
+                            Если не отмечено, статья сохранится как черновик.
+                        </div>
+                        {% if form.is_published.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.is_published.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- КНОПКИ ДЕЙСТВИЙ -->
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                    <!-- КНОПКА НАЗАД -->
+                    <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'blog:blog_list' %}{% endif %}"
+                       class="btn btn-outline-secondary">
+                        ← Отмена
+                    </a>
+
+                    {% if object %}
+                    <a href="{% url 'blog:blogpost_delete' pk=object.pk %}"
+                       class="btn btn-outline-danger">
+                        🗑️ Удалить
+                    </a>
+                    {% endif %}
+
+
+                    <!-- ОСНОВНАЯ КНОПКА -->
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        {% if object %}
+                            💾 Сохранить изменения
+                        {% else %}
+                            ✅ Создать статью
+                        {% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- СКРИПТ ДЛЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЯ И ПОДСЧЕТА СЛОВ -->
+<script>
+    // 1. ФУНКЦИЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЯ
+    function previewImage(input) {
+        // Находим элемент превью
+        var preview = document.getElementById('imagePreview');
+
+        // Проверяем, выбран ли файл
+        if (input.files && input.files[0]) {
+            // Создаем FileReader
+            var reader = new FileReader();
+
+            // Когда файл прочитан
+            reader.onload = function(e) {
+                // Устанавливаем картинку
+                preview.src = e.target.result;
+                // Показываем превью
+                preview.style.display = 'block';
+            };
+
+            // Читаем файл
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            // Скрываем превью если файл отменен
+            preview.style.display = 'none';
+        }
+    }
+
+    // 2. ФУНКЦИЯ ПОДСЧЕТА СЛОВ
+    function updateWordCount() {
+        var textarea = document.getElementById('id_content');
+        var wordCount = document.getElementById('wordCount');
+        var readingTime = document.getElementById('readingTime');
+
+        if (textarea && wordCount && readingTime) {
+            // Считаем слова (разделяем пробелами)
+            var words = textarea.value.trim().split(/\s+/);
+            var count = words.length;
+            if (words[0] === '') count = 0; // Если текст пустой
+
+            // Обновляем на странице
+            wordCount.textContent = count;
+            readingTime.textContent = Math.max(1, Math.ceil(count / 200));
+        }
+    }
+
+    // 3. ВСЕ НАСТРАИВАЕМ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+    document.addEventListener('DOMContentLoaded', function() {
+        // А) Настраиваем подсчет слов
+        var textarea = document.getElementById('id_content');
+        if (textarea) {
+            updateWordCount(); // Считаем сразу
+            textarea.addEventListener('input', updateWordCount); // И при каждом изменении
+        }
+
+        // Б) Автофокус на заголовке если пусто
+        var title = document.getElementById('id_title');
+        if (title && title.value === '') {
+            title.focus();
+        }
+
+        // В) Гарантированно скрываем превью при загрузке
+        var preview = document.getElementById('imagePreview');
+        if (preview) {
+            preview.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

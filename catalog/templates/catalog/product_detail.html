@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load catalog_tags %}
+
+{% block title %}{{ product.name }} | Skystore{% endblock %}
+
+{% block page_header %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'catalog:product_list' %}">Каталог</a>
+            </li>
+            <li class="breadcrumb-item active">{{ product.name|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+
+    <!-- ЗАГОЛОВОК ТОВАРА -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold">{{ product.name }}</h1>
+            <div class="d-flex align-items-center gap-3 mt-2">
+                {% if product.category %}
+                <span class="badge bg-primary">
+                    {{ product.category.name }}
+                </span>
+                {% endif %}
+                <span class="text-muted small">
+                    📅 Добавлен: {{ product.created_at|date:"d.m.Y" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="row g-4">
+
+        <!-- ЛЕВАЯ КОЛОНКА: ИЗОБРАЖЕНИЕ -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <!-- Используем результат media_filter для проверки -->
+                        {% with img_url=product.image|media_filter %}
+                        {% if img_url %}
+                        <img src="{{ img_url }}"
+                             alt="{{ product.name }}"
+                             class="img-fluid rounded"
+                             style="max-height: 400px; object-fit: contain;">
+                        <!-- Если media_filter вернул None - показываем заглушку -->
+                        {% else %}
+                        <div class="no-image-placeholder py-5">
+                            <svg width="96" height="96" fill="#6c757d" viewBox="0 0 24 24">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                            </svg>
+                            <p class="mt-3 text-muted">Нет изображения</p>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: ИНФОРМАЦИЯ -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <!-- ЦЕНА (самое важное) -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-baseline">
+                            <span class="text-muted me-2">Цена:</span>
+                            <span class="display-5 fw-bold text-primary">
+                                {{ product.purchase_price }} ₽
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- КНОПКА КУПИТЬ -->
+                    <div class="mb-5">
+                        <button class="btn btn-success btn-lg w-100 py-3 fw-bold">
+                            🛒 Добавить в корзину
+                        </button>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                ✅ Быстрая доставка • ✅ Гарантия 1 год
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- ОПИСАНИЕ ТОВАРА -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2 mb-3">📝 Описание товара</h5>
+                        <div class="description-text" style="line-height: 1.6;">
+                            {% if product.description %}
+                                {{ product.description|linebreaks }}
+                            {% else %}
+                                <p class="text-muted fst-italic">
+                                    Описание для этого товара пока не добавлено.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ -->
+                    <div class="mt-4 pt-4 border-top">
+                        <h6 class="mb-3">📋 Детали товара</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong>Категория:</strong>
+                                <span class="text-muted">
+                                    {{ product.category.name|default:"Не указана" }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Дата добавления:</strong>
+                                <span class="text-muted">
+                                    {{ product.created_at|date:"d.m.Y" }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Артикул:</strong>
+                                <span class="text-muted">
+                                    #{{ product.id|stringformat:"06d" }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Статус:</strong>
+                                <span class="badge bg-success">В наличии</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- КНОПКА НАЗАД -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'catalog:product_list' %}"
+                   class="btn btn-outline-secondary">
+                    ← Вернуться в каталог
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

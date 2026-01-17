@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Skystore{% endblock %}</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <!-- 1. Общие стили -->
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+
+    <!-- 2. Стили каталога (всегда подключены) -->
+    <link href="{% static 'css/catalog.css' %}" rel="stylesheet">
+
+    <!-- 3. Блок для блога (подключается только на страницах блога) -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+     {% include 'includes/inc_menu.html' %}
+
+     <!-- ЗАГОЛОВОК САЙТА -->
+     {% block page_header %}
+     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+         <h1 class="display-4">
+             {% block page_title %}Skystore{% endblock %}
+         </h1>
+         <p class="lead fs-4">
+             {% block page_description %}
+             Skystore - наш маленький интернет-магазин. Здесь вы можете купить разные товары по выгодным ценам!
+             {% endblock %}
+         </p>
+     </div>
+     {% endblock %}
+
+<!-- ОСНОВНОЙ КОНТЕНТ (здесь будет подставляться контент из дочерних шаблонов) -->
+      <div class="container">
+          {% block content %}{% endblock %}
+      </div>
+
+
+    <div class="container">
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="row">
+                <div class="col-12 col-md">
+                    SkyStore
+                    <small class="d-block mb-3 text-muted">&copy; 2026</small>
+                </div>
+                <div class="col-6 col-md">
+                    <h5>Категории</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="#">Рассылки</a></li>
+                        <li><a class="text-muted" href="#">Телеграм боты</a></li>
+                        <li><a class="text-muted" href="#">Полезные утилиты</a></li>
+                        <li><a class="text-muted" href="#">Веб-приложения</a></li>
+                        <li><a class="text-muted" href="#">Микросервисы</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md">
+                    <h5>Дополнительно</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="{% url 'blog:blog_list' %}">Мы пишем</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md">
+                    <h5>О нас</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="{% url 'catalog:contacts' %}">Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+
+    <svg style="display: none;">
+        <symbol id="image-icon" viewBox="0 0 24 24">
+            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </symbol>
+    </svg>
+
+    <!-- Подключение Bootstrap JS -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    // 1. Ждем, пока страница загрузится
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // 2. Ищем все элементы с подсказками
+    var tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+
+    // 3. Проверяем: если таких элементов нет - выходим
+    if (tooltipElements.length === 0) return;
+
+    // 4. Для каждого найденного элемента
+    tooltipElements.forEach(function(element) {
+        // 5. Создаем подсказку Bootstrap
+        new bootstrap.Tooltip(element);
+    });
+
+});
+</script>
+</body>
+</html>

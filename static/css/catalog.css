@@ -1,124 +1,181 @@
-/* === 1. ШАПКА КАРТОЧКИ (фиксированная) === */
+/*
+catalog.css - СТИЛИ  ДЛЯ КАТАЛОГА
+
+/*
+ШАПКА КАРТОЧКИ ТОВАРА (верхняя часть)
+-------------------------
+Это серая полоска сверху карточки товара,
+где находится название товара.
+*/
 .card-header {
-    height: 70px; /* ФИКСИРОВАННАЯ высота */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1rem;
-    background-color: #dee2e6 !important;
-    border-bottom: none;
+    height: 70px;                    /* Фиксированная высота 70px */
+    display: flex;                   /* Используем flexbox для выравнивания */
+    align-items: center;             /* Вертикальное выравнивание по центру */
+    justify-content: center;         /* Горизонтальное выравнивание по центру */
+    padding: 0.75rem 1rem;           /* Внутренние отступы */
+    background-color: #dee2e6 !important;  /* Светло-серый фон, !important перебивает Bootstrap */
+    border-bottom: none;             /* Убираем нижнюю границу */
 }
 
+/* Заголовок внутри шапки карточки */
 .card-header h4 {
-    margin: 0;
-    text-align: center;
-    font-size: 1.1rem;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    max-height: 2.6em; /* Максимум 2 строки */
+    margin: 0;                       /* Убираем отступы вокруг заголовка */
+    text-align: center;              /* Текст по центру */
+    font-size: 1.1rem;               /* Размер шрифта чуть больше обычного */
+    line-height: 1.3;                /* Межстрочный интервал */
+
+    /* Ограничиваем заголовок 2 строками с многоточием в конце */
+    display: -webkit-box;            /* Для старых браузеров */
+    -webkit-line-clamp: 2;           /* Показываем максимум 2 строки */
+    -webkit-box-orient: vertical;    /* Вертикальная ориентация */
+    overflow: hidden;                /* Скрываем текст, который не поместился */
+    text-overflow: ellipsis;         /* Добавляем "..." в конце обрезанного текста */
+    width: 100%;                     /* Ширина 100% родительского блока */
+    max-height: 2.6em;               /* Максимальная высота = 2 строки */
 }
 
-/* === 2. ИЗОБРАЖЕНИЕ (фиксированная) === */
+/*
+КОНТЕЙНЕР ДЛЯ ИЗОБРАЖЕНИЯ ТОВАРА
+-------------------------
+Блок, в котором находится картинка товара.
+Все картинки товаров будут одинаковой высоты.
+*/
 .card-img-container {
-    height: 200px; /* ФИКСИРОВАННАЯ высота */
-    overflow: hidden;
-    background-color: #f8f9fa;
-    position: relative;
-    border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
+    height: 200px;                   /* Фиксированная высота 200px */
+    overflow: hidden;                /* Обрезаем картинку, если она больше контейнера */
+    background-color: #f8f9fa;       /* Светло-серый фон если нет картинки */
+    position: relative;              /* Для позиционирования картинки внутри */
+    border-top: 1px solid #dee2e6;   /* Серая линия сверху */
+    border-bottom: 1px solid #dee2e6;/* Серая линия снизу */
 }
 
+/* Сама картинка товара внутри контейнера */
 .card-img-container img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    transition: all 0.3s ease;
+    position: absolute;              /* Абсолютное позиционирование относительно контейнера */
+    top: 50%;                       /* Сдвигаем вниз на 50% высоты контейнера */
+    left: 50%;                      /* Сдвигаем вправо на 50% ширины контейнера */
+    transform: translate(-50%, -50%); /* Сдвигаем обратно на половину своей ширины/высоты */
+    max-width: 100%;                /* Максимальная ширина = 100% контейнера */
+    max-height: 100%;               /* Максимальная высота = 100% контейнера */
+    width: auto;                    /* Ширина автоматическая (сохраняет пропорции) */
+    height: auto;                   /* Высота автоматическая (сохраняет пропорции) */
+    transition: all 0.3s ease;      /* Плавная анимация всех свойств за 0.3 секунды */
 }
 
+/* Эффект при наведении на картинку товара */
 .card-img-container img:hover {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05); /* Увеличиваем картинку на 5% */
 }
 
-/* === 3. ТЕЛО КАРТОЧКИ (гибкое, но контролируемое) === */
+/*
+ТЕЛО КАРТОЧКИ ТОВАРА (нижняя часть)
+-------------------------
+Блок под картинкой, где находится:
+- цена
+- описание
+- характеристики
+- кнопка "Купить"
+*/
 .card-body {
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-    min-height: 250px; /* МИНИМАЛЬНАЯ высота */
+    display: flex;                  /* Используем flexbox */
+    flex-direction: column;         /* Элементы в колонку (сверху вниз) */
+    padding: 1.25rem;               /* Внутренние отступы */
+    min-height: 250px;              /* Минимальная высота 250px */
 }
 
-/* Цена (всегда сверху тела) */
+/*
+ЦЕНА ТОВАРА
+-------------------------
+*/
 .product-price {
-    color: #0d6efd;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    flex-shrink: 0; /* Не сжимается */
+    color: #0d6efd;                 /* Синий цвет как у Bootstrap primary */
+    font-weight: bold;              /* Жирный шрифт */
+    margin-bottom: 1rem;            /* Отступ снизу 1rem */
+    flex-shrink: 0;                 /* Не сжимается при нехватке места */
 }
 
-/* Информация о товаре (занимает доступное пространство) */
+/*
+ИНФОРМАЦИЯ О ТОВАРЕ (список характеристик)
+-------------------------
+*/
 .product-info {
-    flex: 1 1 auto; /* Растягивается */
-    min-height: 120px; /* МИНИМАЛЬНАЯ высота для информации */
+    flex: 1 1 auto;                 /* Занимает всё доступное пространство */
+    min-height: 120px;              /* Минимальная высота 120px */
 }
 
+/* Убираем отступ снизу у списка */
 .product-info ul {
     margin-bottom: 0;
 }
 
+/* Отступ между элементами списка */
 .product-info li {
     margin-bottom: 0.75rem;
 }
 
-/* Кнопка (всегда внизу тела) */
+/*
+БЛОК С КНОПКАМИ (Купить, Подробнее и т.д.)
+-------------------------
+Всегда находится внизу карточки
+*/
 .product-actions {
-    flex-shrink: 0; /* Не сжимается */
-    margin-top: auto; /* Прижимается к низу */
-    padding-top: 1rem;
-    border-top: 1px solid #dee2e6;
+    flex-shrink: 0;                 /* Не сжимается */
+    margin-top: auto;               /* Прижимается к низу (магия flexbox) */
+    padding-top: 1rem;              /* Отступ сверху */
+    border-top: 1px solid #dee2e6;  /* Серая линия сверху */
 }
 
-.buy-btn {
-    font-weight: 600;
-    padding: 0.75rem;
-}
-
-/* === 4. ОБЩИЕ СТИЛИ === */
+/*
+КАРТОЧКА ТОВАРА (обертка)
+-------------------------
+*/
 .product-card {
-    margin-bottom: 1.5rem;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 1.5rem;          /* Отступ снизу между карточками */
+    display: flex;                  /* Flexbox */
+    flex-direction: column;         /* Элементы в колонку */
 }
 
+/* Карточка внутри обертки */
 .product-card > .card {
-    flex: 1; /* Растягивается на всю доступную высоту */
+    flex: 1;                        /* Растягивается на всю доступную высоту */
 }
 
-/* Заглушка для отсутствующих изображений */
-.no-image-placeholder {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: #6c757d;
+
+/*
+СТРАНИЦА ДЕТАЛЬНОЙ ИНФОРМАЦИИ О ТОВАРЕ
+-------------------------
+Специальные стили для страницы одного товара
+*/
+
+/* Блок с описанием товара справа от картинки */
+.description-content {
+    height: 100%;                   /* Высота 100% родительского блока */
 }
 
-.no-image-placeholder svg {
-    margin-bottom: 0.5rem;
+/* Текст описания товара */
+.description-text {
+    line-height: 1.6;               /* Межстрочный интервал */
+    color: #333;                    /* Темно-серый цвет текста */
 }
 
-/* Гарантируем одинаковую высоту всех карточек в строке */
-.row {
-    display: flex;
-    flex-wrap: wrap;
+/*
+МОБИЛЬНАЯ ВЕРСИЯ КАТАЛОГА
+-------------------------
+Эти стили работают ТОЛЬКО на экранах меньше 768px
+*/
+/*
+МОБИЛЬНАЯ ВЕРСИЯ КАТАЛОГА
+-------------------------
+*/
+@media (max-width: 768px) {
+    .card-img-container {
+        height: 180px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
 }
+
+
