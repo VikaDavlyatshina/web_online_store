@@ -85,13 +85,18 @@ class Product(models.Model):
         decimal_places=2,  # 2 знака = копейки
         validators=[
             MinValueValidator(
-                1,  # Минимальная цена - 1 рубль
-                message="Цена должна быть больше нуля. Минимум 1 рубль",
-            )
+                1  # Минимальная цена - 1 рубль
+)
         ],
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name="Опубликован",
+        help_text="Отображать товар на сайте"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")  # Автоматически при создании
     updated_at = models.DateTimeField(
         auto_now=True,  # Автоматически при сохранении

@@ -14,14 +14,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="category",
-            name="descriptions",
-        ),
-        migrations.RemoveField(
-            model_name="product",
-            name="descriptions",
-        ),
         migrations.AddField(
             model_name="category",
             name="description",

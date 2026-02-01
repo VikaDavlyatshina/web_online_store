@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView
 
+from .forms import ProductForm
 from .models import Category, Contact, Product
 
 # Create your views here.
@@ -22,13 +23,7 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     template_name = "catalog/product_add.html"
-    fields = [
-        "name",
-        "category",
-        "purchase_price",
-        "description",
-        "image",
-    ]
+    form_class = ProductForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
