@@ -1,12 +1,12 @@
 {% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
 
-{% block title %}Добавить товар | Skystore{% endblock %}
 
-{% block page_title %}Добавить новый товар{% endblock %}
-
+{% block title %}
+    {% if object %}Редактирование {{ object.name }}{% else %}Добавить товар{% endif %} | Skystore
+{% endblock %}
 <!-- Меняем описание -->
 {% block page_description %}
-Заполните форму ниже, чтобы добавить товар в каталог
+    {% if object %}Отредактируйте информацию о товаре ниже{% else %}Заполните форму ниже, чтобы добавить товар в каталог{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -126,7 +126,9 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-body">
-                    <h5 class="card-title mb-4">Заполните данные</h5>
+                    <h5 class="card-title mb-4">
+                        {% if object %}Редактирование товара{% else %}Заполните данные{% endif %}
+                    </h5>
 
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -226,12 +228,20 @@
                         </div>
 
                         <!-- Кнопка -->
-                        <button type="submit" class="btn w-100 py-3 shadow-sm"
-                                style="background-color: #57D4AB; color: white;
-                                border-radius: 10px; border: none;">
-                            <i class="bi bi-plus-square me-2"></i>
-                            Добавить товар в каталог
-                        </button>
+                        <div class="d-flex justify-content-between mt-4">
+                            <!-- КНОПКА ОТМЕНЫ -->
+                            <a href="{% if object %}{% url 'catalog:product_details' object.pk %}{% else %}{% url 'catalog:product_list' %}{% endif %}"
+                               class="btn btn-outline-secondary px-4 py-2">
+                                <i class="bi bi-arrow-left me-1"></i> Отмена
+                            </a>
+
+                            <!-- КНОПКА СОХРАНЕНИЯ -->
+                            <button type="submit" class="btn px-4 py-2"
+                                    style="background-color: #57D4AB; color: white; border-radius: 10px; border: none;">
+                                <i class="bi {% if object %}bi-save{% else %}bi-plus-square{% endif %} me-2"></i>
+                                {% if object %}Сохранить изменения{% else %}Добавить товар{% endif %}
+                            </button>
+                        </div>
 
                     </form>
                 </div>

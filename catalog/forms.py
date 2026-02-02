@@ -42,6 +42,13 @@ class ProductForm(forms.ModelForm):
             'placeholder': 'Опишите товар подробно: материалы, размеры, особенности...'
         })
         self.fields['image'].widget.attrs.update({'class': 'form-control'})
+
+        # Убираем стандартные подписи Django
+        self.fields['image'].widget.clear_checkbox_label = "Очистить"
+        self.fields['image'].widget.input_text = "Изменить"
+        self.fields['image'].widget.initial_text = "Текущее"
+        self.fields['image'].widget.input_text = "Изменить"
+
         self.fields['is_published'].widget.attrs.update({'class': 'form-check-input'})
 
         # Настраиваем категории
@@ -51,7 +58,7 @@ class ProductForm(forms.ModelForm):
 
     def clean_name(self):
         """Проверка, содержит ли Название запрещенные слова"""
-        name = self.cleaned_data.get("name", "").lower()
+        name = self.cleaned_data.get("name", "")
 
         if not name:
             raise ValidationError("Название товара обязательно")
@@ -63,8 +70,9 @@ class ProductForm(forms.ModelForm):
         if not any(char.isalpha() for char in name):
             raise ValidationError("Название должно содержать буквы")
 
+        name_lower = name.lower()
         for forbidden_word in self.FORBIDDEN_WORDS:
-            if forbidden_word in name:
+            if forbidden_word in name_lower:
                 raise ValidationError(
                     f"Название содержит запрещенное слово: {forbidden_word}"
                 )
@@ -73,12 +81,13 @@ class ProductForm(forms.ModelForm):
 
     def clean_description(self):
         """Проверка, содержит ли Описание запрещенные слова"""
-        description = self.cleaned_data.get("description", "").lower()
+        description = self.cleaned_data.get("description", "")
 
         # Проверяем только если описание не пустое
         if description:
+            description_lower = description.lower()
             for forbidden_word in self.FORBIDDEN_WORDS:
-                if forbidden_word in description:
+                if forbidden_word in description_lower:
                     raise ValidationError(
                         f"Описание содержит запрещенное слово: {forbidden_word}"
                     )

@@ -83,11 +83,6 @@ class Product(models.Model):
     purchase_price = models.DecimalField(
         max_digits=10,  # До 10 млн рублей
         decimal_places=2,  # 2 знака = копейки
-        validators=[
-            MinValueValidator(
-                1  # Минимальная цена - 1 рубль
-)
-        ],
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )

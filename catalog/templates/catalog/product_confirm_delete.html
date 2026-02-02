@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление товара | Skystore{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Подтверждение удаления
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-danger">Вы уверены, что хотите удалить товар?</h5>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Внимание!</strong> Это действие нельзя отменить. Все данные о товаре будут удалены.
+                    </div>
+                    
+                    <!-- Информация о товаре -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6>Информация о товаре:</h6>
+                            <p><strong>Название:</strong> {{ object.name }}</p>
+                            <p><strong>Категория:</strong> {{ object.category.name }}</p>
+                            <p><strong>Цена:</strong> {{ object.purchase_price }} ₽</p>
+                            {% if object.description %}
+                                <p><strong>Описание:</strong> {{ object.description|truncatechars:100 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'catalog:product_details' object.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Отмена, вернуться к товару
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Да, удалить товар
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
