@@ -11,8 +11,9 @@
 
 {% block content %}
 
-<div class="container">
 
+{% if user.is_authenticated %}
+<div class="container">
     <!-- БЛОК 1: Основная информация и форма -->
     <div class="row text-start">
         <!--КОЛОНКА 1: Информация о компании -->
@@ -176,5 +177,8 @@
         </div>
     </div>
 </div>
+ {% else %}
+        {% include 'includes/inc_auth_required.html' %}
+{% endif %}
 
 {% endblock %}
