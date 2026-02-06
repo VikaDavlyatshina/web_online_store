@@ -6,9 +6,9 @@
 {% block page_header %}{% endblock %}
 
 {% block content %}
+
+{% if user.is_authenticated %}
 <div class="container py-4">
-
-
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -165,7 +165,7 @@
         </div>
     </div>
 </div>
-
-
 </div>
+{% include 'includes/inc_auth_required.html' %}
+{% endif %}
 {% endblock %}
