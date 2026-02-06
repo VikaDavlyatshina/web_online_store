@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Регистрация</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Вывод ошибок формы -->
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                Пожалуйста, исправьте ошибки ниже.
+                            </div>
+                        {% endif %}
+
+                        <!-- Отображение формы -->
+                        {{ form.as_p }}
+
+                        <!-- Кнопка -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Зарегистрироваться
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Ссылка на вход -->
+                    <div class="text-center mt-3">
+                        <p class="mb-0">
+                            Уже есть аккаунт?
+                            <a href="{% url 'users:login' %}">Войдите</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
