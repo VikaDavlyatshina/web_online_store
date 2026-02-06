@@ -3,7 +3,35 @@ from django.core.exceptions import ValidationError
 from catalog.models import Product, Category
 
 
-class ProductForm(forms.ModelForm):
+
+class StyleFormMixin:
+    """
+    Миксин для автоматической стилизации полей формы.
+    Добавляет Bootstrap классы в зависимости от типа поля.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Проходим по всем полям формы
+        for field_name, field, in self.fields.items():
+            # Проверяем тип виджета
+            widget = field.widget
+
+            if isinstance(widget, forms.CheckboxInput):
+                field.widget.attrs['class'] = 'form-check-input'
+            elif isinstance(widget, forms.Select):
+                field.widget.attrs['class'] = 'form-select'
+            elif isinstance(widget, forms.SelectMultiple):
+                field.widget.attrs['class'] = 'form-select'
+            elif isinstance(widget, forms.RadioSelect):
+                field.widget.attrs['class'] = 'form-check-input'
+            else:
+                # Для TextInput, NumberInput, EmailInput, Textarea, FileInput и т.д.
+                field.widget.attrs['class'] = 'form-control'
+
+
+class ProductForm(StyleFormMixin, forms.ModelForm):
     # Список запрещенных слов
     FORBIDDEN_WORDS = [
         'казино', 'криптовалюта', 'крипта',
@@ -19,41 +47,31 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Добавляем CSS классы
-        self.fields['name'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Например: Набор для творчества "Алмазная мозаика"',
-        })
-        self.fields['category'].empty_label = "Выберите категорию..."  # Это должно быть уже
-        self.fields['category'].queryset = Category.objects.all().order_by('name')
-        self.fields['category'].widget.attrs.update({'class': 'form-select'})
-        if not self.instance.pk:  # Если товар новый (не редактирование)
-            self.fields['category'].initial = None
+        # Placeholders и специфические атрибуты
+        self.fields['name'].widget.attrs['placeholder'] = 'Например: Набор для творчества "Алмазная мозаика"'
 
         self.fields['purchase_price'].widget.attrs.update({
-            'class': 'form-control',
             'step': '0.1',
             'min': '1',
             'placeholder': '0.00'
         })
+
         self.fields['description'].widget.attrs.update({
-            'class': 'form-control',
             'rows': '4',
             'placeholder': 'Опишите товар подробно: материалы, размеры, особенности...'
         })
-        self.fields['image'].widget.attrs.update({'class': 'form-control'})
 
-        # Убираем стандартные подписи Django
+        # Настройка Категории
+        self.fields['category'].empty_label = "Выберите категорию..."
+        self.fields['category'].queryset = Category.objects.all().order_by('name')
+        if not self.instance.pk:
+            self.fields['category'].initial = None
+
+
+        # Убираем стандартные подписи Django для изображения
         self.fields['image'].widget.clear_checkbox_label = "Очистить"
         self.fields['image'].widget.input_text = "Изменить"
         self.fields['image'].widget.initial_text = "Текущее"
-        self.fields['image'].widget.input_text = "Изменить"
-
-        self.fields['is_published'].widget.attrs.update({'class': 'form-check-input'})
-
-        # Настраиваем категории
-        self.fields['category'].empty_label = "Выберите категорию..."
-        self.fields['category'].queryset = Category.objects.all().order_by('name')
 
 
     def clean_name(self):
