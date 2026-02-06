@@ -1,12 +1,12 @@
 {% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
 
-{% block title %}Добавить товар | Skystore{% endblock %}
 
-{% block page_title %}Добавить новый товар{% endblock %}
-
+{% block title %}
+    {% if object %}Редактирование {{ object.name }}{% else %}Добавить товар{% endif %} | Skystore
+{% endblock %}
 <!-- Меняем описание -->
 {% block page_description %}
-Заполните форму ниже, чтобы добавить товар в каталог
+    {% if object %}Отредактируйте информацию о товаре ниже{% else %}Заполните форму ниже, чтобы добавить товар в каталог{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -126,63 +126,122 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-body">
-                    <h5 class="card-title mb-4">Заполните данные</h5>
+                    <h5 class="card-title mb-4">
+                        {% if object %}Редактирование товара{% else %}Заполните данные{% endif %}
+                    </h5>
 
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <!-- Название -->
                         <div class="mb-3">
-                            <label class="form-label">Название товара *</label>
-                            <input type="text" class="form-control" name="name"
-                                   placeholder="Например: Набор для творчества 'Алмазная мозайка' " required>
+                            <label for="{{ form.name.id_for_label }}" class="form-label">
+                                Название товара *
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- Категория -->
                         <div class="mb-3">
-                            <label class="form-label">Категория *</label>
-                            <select class="form-select" name="category" required>
-                                <option value="" disabled selected>Выберите категорию...</option>
-
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            <label for="{{ form.category.id_for_label }}" class="form-label">
+                                Категория *
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.category.errors %}
+                                {{ error }}
                                 {% endfor %}
-                            </select>
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- Цена -->
                         <div class="mb-3">
-                            <label class="form-label">Цена *</label>
+                            <label for="{{ form.purchase_price.id_for_label }}" class="form-label">
+                                Цена *
+                            </label>
                             <div class="input-group">
-                                <input type="number" class="form-control" name="purchase_price"
-                                       placeholder="0.00" step="0.01" min="1" required>
+                                {{ form.purchase_price }}
                                 <span class="input-group-text">₽</span>
                             </div>
+                            {% if form.purchase_price.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.purchase_price.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- Описание -->
                         <div class="mb-3">
-                            <label class="form-label">Описание</label>
-                            <textarea class="form-control" name="description"
-                                      placeholder="Опишите товар подробно: материалы, размеры, особенности..."
-                                      rows="4"></textarea>
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Описание
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.description.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- Фото -->
                         <div class="mb-3">
-                            <label class="form-label">Фото товара *</label>
-                            <input type="file" class="form-control" name="image"
-                                   accept="image/*">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                Фото товара
+                            </label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.image.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             <div class="form-text">Максимальный размер: 5MB</div>
                         </div>
 
+                        <!-- Чекбокс "Опубликован" -->
+                        <div class="mb-3 form-check">
+                            {{ form.is_published }}
+                            <label for="{{ form.is_published.id_for_label }}" class="form-check-label">
+                                Опубликовать на сайте
+                            </label>
+                            {% if form.is_published.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.is_published.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
                         <!-- Кнопка -->
-                        <button type="submit" class="btn w-100 py-3 shadow-sm"
-                                style="background-color: #57D4AB; color: white;
-                                border-radius: 10px; border: none;">
-                            <i class="bi bi-plus-square me-2"></i>
-                            Добавить товар в каталог
-                        </button>
+                        <div class="d-flex justify-content-between mt-4">
+                            <!-- КНОПКА ОТМЕНЫ -->
+                            <a href="{% if object %}{% url 'catalog:product_details' object.pk %}{% else %}{% url 'catalog:product_list' %}{% endif %}"
+                               class="btn btn-outline-secondary px-4 py-2">
+                                <i class="bi bi-arrow-left me-1"></i> Отмена
+                            </a>
+
+                            <!-- КНОПКА СОХРАНЕНИЯ -->
+                            <button type="submit" class="btn px-4 py-2"
+                                    style="background-color: #57D4AB; color: white; border-radius: 10px; border: none;">
+                                <i class="bi {% if object %}bi-save{% else %}bi-plus-square{% endif %} me-2"></i>
+                                {% if object %}Сохранить изменения{% else %}Добавить товар{% endif %}
+                            </button>
+                        </div>
 
                     </form>
                 </div>

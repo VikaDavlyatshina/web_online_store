@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView
+from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView, UpdateView, DeleteView
 
+from .forms import ProductForm
 from .models import Category, Contact, Product
 
 # Create your views here.
@@ -14,6 +15,14 @@ class ProductListView(ListView):
     ordering = ["-created_at"]
     paginate_by = 6
 
+    def get_queryset(self):
+        """
+        Переопределение метода.
+        Выводятся только опубликованные статьи
+        """
+
+        return super().get_queryset().filter(is_published=True)
+
 class ProductDetailView(DetailView):
     model = Product
     context_object_name = "product"
@@ -22,13 +31,7 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     template_name = "catalog/product_add.html"
-    fields = [
-        "name",
-        "category",
-        "purchase_price",
-        "description",
-        "image",
-    ]
+    form_class = ProductForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,6 +42,22 @@ class ProductCreateView(CreateView):
     def get_success_url(self):
         """Редирект на страницу созданного товара"""
         return reverse("catalog:product_details", args=[self.object.pk])
+
+class ProductUpdateView(UpdateView):
+    """Редактирование товара"""
+    model = Product
+    form_class = ProductForm
+    template_name = "catalog/product_add.html"
+
+    def get_success_url(self):
+        """Редирект на страницу созданного товара"""
+        return reverse("catalog:product_details", args=[self.object.pk])
+
+
+class ProductDeleteView(DeleteView):
+    """Удаление товара (как в блоге)"""
+    model = Product
+    success_url = reverse_lazy('catalog:product_list')
 
 
 class ContactsView(TemplateView):
