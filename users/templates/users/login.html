@@ -1,0 +1,17 @@
+{% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
+
+{% block content %}
+<div class="conteiner">
+    <form class="row" method="post" enctype="multipart/form-data">
+        <div class="card">
+            <div class="card-body">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">
+                Войти
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
