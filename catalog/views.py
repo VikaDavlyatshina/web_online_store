@@ -1,11 +1,10 @@
-from django.core.exceptions import ValidationError
-from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView, DeleteView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
-from .forms import ProductForm
-from .models import Category, Contact, Product
+from .forms import ProductForm, ContactForm
+from .models import Contact, Product
 
 # Create your views here.
 
@@ -51,7 +50,6 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["categories"] = Category.objects.all().order_by("name")
         return context
 
     def get_success_url(self):
@@ -91,67 +89,57 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     redirect_field_name = 'next'
 
 
-class ContactsView(LoginRequiredMixin, TemplateView):
+class ContactCreateView(LoginRequiredMixin, FormView):
+    """
+    Представление для страницы Контактов
+    Автоматически обрабатывает GET и POST запросы
+    """
+
     template_name = "catalog/contacts.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["contacts"] = Contact.objects.all().order_by("-created_at")
-
-        # Проверяем сообщения из сессии (GET-запрос)
-        if "contact_alert" in self.request.session:
-            alert_data = self.request.session.pop("contact_alert")
-            context["alert"] = {
-                "type": alert_data["type"],
-                "message": alert_data["message"],
-            }
-            if "form_data" in alert_data:
-                context["form_data"] = alert_data["form_data"]
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-        # Обработка POST-запроса
-        form_data = {
-            "name": request.POST.get("name", "").strip(),
-            "phone": request.POST.get("phone", "").strip(),
-            "message": request.POST.get("message", "").strip(),
-        }
-
-        try:
-            contact = Contact(**form_data)
-            contact.full_clean()
-            contact.save()
-
-            request.session["contact_alert"] = {
-                "type": "success",
-                "message": f"Спасибо, {contact.name}! Сообщение отправлено.",
-            }
-
-        except ValidationError as e:
-            errors = []
-            field_names = {"name": "Имя", "phone": "Телефон", "message": "Сообщение"}
-
-            for field, name in field_names.items():
-                if field in e.message_dict:
-                    errors.append(f"{name}: {e.message_dict[field][0]}")
-
-            if not errors and e.messages:
-                errors = list(e.messages)
-
-            error_text = f"Пожалуйста исправьте ошибки перед отправкой: {'; '.join(errors)}"
-
-            request.session["contact_alert"] = {
-                "type": "error",
-                "message": error_text,
-                "form_data": form_data,
-            }
-
-        return redirect(reverse("catalog:contacts"))
+    form_class = ContactForm
+    success_url = reverse_lazy("catalog:contacts")
 
     # Куда редиректить если не авторизован
     login_url = '/users/login/'
     redirect_field_name = 'next'
+
+    def get_context_data(self, **kwargs):
+        """Добавляем список контактов в контекст"""
+
+        context = super().get_context_data(**kwargs)
+        context["contacts"] = Contact.objects.all().order_by("-created_at")
+        return context
+
+    def form_valid(self, form):
+        """
+        Вызывается, когда форма валидна.
+        Автоматически сохраняет данные
+        """
+
+        # Сохраняем контакт в БД
+        contact = form.save()
+
+        # Добавляем сообщение об успехе
+        messages.success(
+            self.request,
+            f'Спасибо, {contact.name}! Сообщение отправлено.'
+        )
+
+        return super().form_valid(form)
+
+
+    def form_invalid(self, form):
+        """
+        Вызывается, когда форма невалидна.
+        Автоматически показывает ошибки в шаблоне
+        """
+        messages.error(
+            self.request,
+            'Пожалуйста, исправьте ошибки в форме.'
+        )
+
+        return super().form_invalid(form)
+
 
 
 

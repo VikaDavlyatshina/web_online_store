@@ -1,8 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from catalog.models import Product, Category
 
-
+from catalog.models import Product, Category, Contact
 
 class StyleFormMixin:
     """
@@ -32,15 +31,19 @@ class StyleFormMixin:
 
 
 class ProductForm(StyleFormMixin, forms.ModelForm):
+    """
+    Форма создания и редактирования товара
+    """
+
     # Список запрещенных слов
     FORBIDDEN_WORDS = [
         'казино', 'криптовалюта', 'крипта',
-        'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар'
+        'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар',
     ]
 
     class Meta:
         model = Product
-        fields = ["name", "category", "purchase_price", "description", "image", "is_published"]
+        exclude  = ["created_at", "updated_at"]
 
 
 
@@ -130,3 +133,109 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
                 raise ValidationError("Фото слишком большое! Максимум 5 MB.")
 
         return image
+
+
+class ContactForm(StyleFormMixin, forms.ModelForm):
+    """
+    Форма для контактов.
+    """
+
+    class Meta:
+        model = Contact
+        exclude = ["created_at", ]
+        error_messages = {
+            'name': {'required': 'Пожалуйста, введите ваше имя'},
+            'message': {'required': 'Пожалуйста, введите сообщение'},
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Настройка внешнего вида полей
+        self.fields["name"].widget.attrs["placeholder"] = "Ваше имя"
+        self.fields["email"].widget.attrs["placeholder"] = "ваш@email.com"
+        self.fields["phone"].widget.attrs["placeholder"] = "+7 (999) 123-45-67"
+        self.fields["message"].widget.attrs["placeholder"] = "Ваше сообщение..."
+        self.fields["message"].widget.attrs["rows"] = 4
+
+    def clean(self):
+        """Проверка: email ИЛИ телефон обязательно"""
+        cleaned_data = super().clean()
+
+        email = cleaned_data.get("email")
+        phone = cleaned_data.get("phone")
+
+        # Безопасная проверка email
+        email_str = ""
+        if email is not None:
+            email_str = str(email).strip()
+
+        # ГЛАВНОЕ ПРАВИЛО: телефон ИЛИ email
+        if not email_str and not phone:
+            raise ValidationError("Укажите email или телефон для связи")
+
+        return cleaned_data
+
+    def clean_name(self):
+        """Проверка имени"""
+        name = self.cleaned_data.get("name")
+
+        if name is None:
+            raise ValidationError("Пожалуйста, введите ваше имя")
+
+        name = name.strip()
+
+        if len(name) < 2:
+            raise ValidationError("Имя должно быть не короче двух букв")
+
+        if not name.replace(" ", "").replace("-", "").isalpha():
+            raise ValidationError("Имя должно содержать только буквы")
+
+        return name
+
+    def clean_email(self):
+        """Проверка email (если указан)"""
+        email = self.cleaned_data.get("email")
+
+        if email is not None:
+            email = str(email).strip()
+
+            if email:  # если не пустая строка
+                if "@" not in email:
+                    raise ValidationError('Email должен содержать символ @')
+                if "." not in email.split("@")[-1]:
+                    raise ValidationError('Email должен содержать домен')
+
+        return email
+
+    def clean_phone(self):
+        """Проверка телефона (если указан)"""
+        phone = self.cleaned_data.get("phone")
+
+        if phone:
+            phone_str = str(phone)
+            if not phone_str.startswith("+7"):
+                raise ValidationError('Введите российский номер телефона (+7)')
+
+        return phone
+
+    def clean_message(self):
+        """Проверка сообщения"""
+        message = self.cleaned_data.get('message')
+
+        if message is None:
+            raise ValidationError('Пожалуйста, введите сообщение')
+
+        message = message.strip()
+
+        if len(message) < 10:
+            raise ValidationError('Сообщение должно быть не короче 10 символов')
+
+        forbidden_words = ['казино', 'криптовалюта', 'биржа', "спам"]
+        message_lower = message.lower()
+
+        for word in forbidden_words:
+            if word in message_lower:
+                raise ValidationError(f'Сообщение содержит запрещенное слово: "{word}"')
+
+        return message

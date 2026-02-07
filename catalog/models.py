@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
@@ -117,30 +118,17 @@ class Contact(models.Model):
     name = models.CharField(
         max_length=150,
         verbose_name="Имя пользователя",
-        # Разрешаем только буквы (A-Z, А-Я), пробелы и дефисы
-        validators=[
-            RegexValidator(
-                regex=r"^[a-zA-Za-яА-ЯёЁ\s\-]+$",
-                message="Имя должно содержать только буквы, пробелы или дефисы.",
-            ),
-            # Минимум 2 символа
-            MinLengthValidator(2, message="Имя слишком короткое"),
-        ],
         help_text="Введите ваше имя",
     )
-    phone = models.CharField(
-        max_length=20,
+    email = models.EmailField(verbose_name="Email", help_text="Введите ваш email", blank=True,
+        null=True,)
+
+    phone = PhoneNumberField(
         verbose_name="Телефон",
         help_text="Введите контактный телефон",
-        validators=[
-            # Проверяет формат: разрешает +, пробелы, скобки, тире
-            RegexValidator(
-                regex=r"^\+?[\d\s\-\(\)]+$",
-                message="Номер может содержать только цифры и символы +, -, (, )",
-            ),
-            # Гарантирует, что введено достаточно символов
-            MinLengthValidator(10, message="Номер слишком короткий. Введите минимум 10 цифр."),
-        ],
+        region="RU",
+        blank=True,
+        null=True,
     )
     message = models.TextField(
         verbose_name="Сообщение",
