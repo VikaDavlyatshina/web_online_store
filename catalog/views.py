@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView, UpdateView, DeleteView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import ProductForm

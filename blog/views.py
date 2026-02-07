@@ -1,5 +1,6 @@
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import BlogPost
 
@@ -44,21 +45,38 @@ class BlogPostDetailView(DetailView):
 
         return post
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class BlogPostCreateView(CreateView):
+
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
     model = BlogPost
     fields = ("title", "content", "preview", "is_published")
     success_url = reverse_lazy("blog:blog_list")
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class BlogPostUpdateView(UpdateView):
+
+
+class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
     model = BlogPost
     fields = ("title", "content", "preview", "is_published")
 
     def get_success_url(self):
         return reverse_lazy("blog:blogpost_detail", kwargs={"pk": self.object.pk})
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class BlogPostDeleteView(DeleteView):
+
+class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
     model = BlogPost
     success_url = reverse_lazy("blog:blog_list")
+
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
