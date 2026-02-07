@@ -11,8 +11,6 @@
 
 {% block content %}
 
-
-{% if user.is_authenticated %}
 <div class="container">
     <!-- БЛОК 1: Основная информация и форма -->
     <div class="row text-start">
@@ -121,6 +119,7 @@
     {% endif %}
 
     <!-- БЛОК 1: Контакты из админки -->
+    {% if user.is_superuser %}
     <div class="row mb-4">
         <div class="col-12">
             <div class="card mb-4 box-shadow">
@@ -176,9 +175,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
- {% else %}
-        {% include 'includes/inc_auth_required.html' %}
-{% endif %}
 
 {% endblock %}

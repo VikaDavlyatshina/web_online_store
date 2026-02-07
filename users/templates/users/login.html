@@ -1,17 +1,85 @@
-{% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <form class="row" method="post" enctype="multipart/form-data">
-        <div class="card">
-            <div class="card-body">
-                {% csrf_token %}
-                {{ form.as_p }}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Авторизация</h4>
+                </div>
+
+                <div class="card-body">
+                    <!-- Ошибки формы -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Неверный email или пароль. Попробуйте снова.
+                        </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Поле Email -->
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email"
+                                   name="{{ form.username.name }}"
+                                   id="{{ form.username.id_for_label }}"
+                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                   placeholder="ваш@email.com"
+                                   value="{{ form.username.value|default:'' }}"
+                                   required>
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Поле Пароль -->
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                Пароль <span class="text-danger">*</span>
+                            </label>
+                            <input type="password"
+                                   name="{{ form.password.name }}"
+                                   id="{{ form.password.id_for_label }}"
+                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                   placeholder="Введите пароль"
+                                   required>
+                            {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Кнопка -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Ссылки -->
+                    <div class="text-center mt-3">
+                        <p class="mb-1">
+                            <a href="{% url 'users:register' %}" class="text-decoration-none">
+                                Нет аккаунта? Зарегистрируйтесь
+                            </a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">
-                Войти
-            </button>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

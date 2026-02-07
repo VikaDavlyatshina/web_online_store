@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import ProductForm
 from .models import Category, Contact, Product
@@ -10,6 +11,9 @@ from .models import Category, Contact, Product
 
 
 class ProductListView(ListView):
+    """
+    Представление для списка товаров
+    """
     model = Product
 
     ordering = ["-created_at"]
@@ -23,12 +27,23 @@ class ProductListView(ListView):
 
         return super().get_queryset().filter(is_published=True)
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
+    """
+    Представление для детального просмотра товара
+    """
     model = Product
     context_object_name = "product"
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class ProductCreateView(CreateView):
+
+
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    """
+    Представление для создания товара
+    """
     model = Product
     template_name = "catalog/product_add.html"
     form_class = ProductForm
@@ -43,8 +58,14 @@ class ProductCreateView(CreateView):
         """Редирект на страницу созданного товара"""
         return reverse("catalog:product_details", args=[self.object.pk])
 
-class ProductUpdateView(UpdateView):
-    """Редактирование товара"""
+     # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Представление для Редактирования товара
+    """
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_add.html"
@@ -53,14 +74,24 @@ class ProductUpdateView(UpdateView):
         """Редирект на страницу созданного товара"""
         return reverse("catalog:product_details", args=[self.object.pk])
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class ProductDeleteView(DeleteView):
-    """Удаление товара (как в блоге)"""
+
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Представление для Удаления товара
+    """
     model = Product
     success_url = reverse_lazy('catalog:product_list')
 
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
-class ContactsView(TemplateView):
+
+class ContactsView(LoginRequiredMixin, TemplateView):
     template_name = "catalog/contacts.html"
 
     def get_context_data(self, **kwargs):
@@ -117,6 +148,10 @@ class ContactsView(TemplateView):
             }
 
         return redirect(reverse("catalog:contacts"))
+
+    # Куда редиректить если не авторизован
+    login_url = '/users/login/'
+    redirect_field_name = 'next'
 
 
 
