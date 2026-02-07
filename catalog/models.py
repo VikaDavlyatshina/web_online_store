@@ -47,7 +47,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """Получение абсолютной ссылки для категории"""
-        return reverse('catalog:category_products', kwargs={'pk': self.pk})
+        return reverse("catalog:category_products", kwargs={"pk": self.pk})
 
 
 class Product(models.Model):
@@ -87,11 +87,7 @@ class Product(models.Model):
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name="Опубликован",
-        help_text="Отображать товар на сайте"
-    )
+    is_published = models.BooleanField(default=True, verbose_name="Опубликован", help_text="Отображать товар на сайте")
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")  # Автоматически при создании
     updated_at = models.DateTimeField(
@@ -109,7 +105,7 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         """Получение абсолютной ссылки для товара"""
-        return reverse('catalog:product_details', kwargs={'pk': self.pk})
+        return reverse("catalog:product_details", kwargs={"pk": self.pk})
 
 
 class Contact(models.Model):
@@ -120,8 +116,12 @@ class Contact(models.Model):
         verbose_name="Имя пользователя",
         help_text="Введите ваше имя",
     )
-    email = models.EmailField(verbose_name="Email", help_text="Введите ваш email", blank=True,
-        null=True,)
+    email = models.EmailField(
+        verbose_name="Email",
+        help_text="Введите ваш email",
+        blank=True,
+        null=True,
+    )
 
     phone = PhoneNumberField(
         verbose_name="Телефон",

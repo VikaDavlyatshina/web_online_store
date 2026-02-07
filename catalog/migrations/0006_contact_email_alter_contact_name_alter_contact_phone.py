@@ -7,23 +7,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('catalog', '0005_remove_category_descriptions_and_more'),
+        ("catalog", "0005_remove_category_descriptions_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contact',
-            name='email',
-            field=models.EmailField(blank=True, help_text='Введите ваш email', max_length=254, null=True, verbose_name='Email'),
+            model_name="contact",
+            name="email",
+            field=models.EmailField(
+                blank=True, help_text="Введите ваш email", max_length=254, null=True, verbose_name="Email"
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='name',
-            field=models.CharField(help_text='Введите ваше имя', max_length=150, verbose_name='Имя пользователя'),
+            model_name="contact",
+            name="name",
+            field=models.CharField(help_text="Введите ваше имя", max_length=150, verbose_name="Имя пользователя"),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='phone',
-            field=phonenumber_field.modelfields.PhoneNumberField(blank=True, help_text='Введите контактный телефон', max_length=128, null=True, region='RU', verbose_name='Телефон'),
+            model_name="contact",
+            name="phone",
+            field=phonenumber_field.modelfields.PhoneNumberField(
+                blank=True,
+                help_text="Введите контактный телефон",
+                max_length=128,
+                null=True,
+                region="RU",
+                verbose_name="Телефон",
+            ),
         ),
     ]

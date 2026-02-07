@@ -5,8 +5,6 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
-
-
 # Create your models here.
 
 
@@ -51,7 +49,7 @@ class BlogPost(models.Model):
         verbose_name="Дата отправки email о 100 просмотрах",
         null=True,
         blank=True,
-        help_text="Когда было отправлено письмо о достижении 100 просмотров"
+        help_text="Когда было отправлено письмо о достижении 100 просмотров",
     )
 
     class Meta:
@@ -101,5 +99,3 @@ class BlogPost(models.Model):
     #         recipient_list=[settings.ADMIN_EMAIL],
     #         fail_silently=False,
     #     )
-
-

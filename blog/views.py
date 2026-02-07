@@ -46,8 +46,8 @@ class BlogPostDetailView(DetailView):
         return post
 
     # Куда редиректить если не авторизован
-    login_url = '/users/login/'
-    redirect_field_name = 'next'
+    login_url = "/users/login/"
+    redirect_field_name = "next"
 
 
 class BlogPostCreateView(LoginRequiredMixin, CreateView):
@@ -56,9 +56,8 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("blog:blog_list")
 
     # Куда редиректить если не авторизован
-    login_url = '/users/login/'
-    redirect_field_name = 'next'
-
+    login_url = "/users/login/"
+    redirect_field_name = "next"
 
 
 class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
@@ -69,8 +68,8 @@ class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("blog:blogpost_detail", kwargs={"pk": self.object.pk})
 
     # Куда редиректить если не авторизован
-    login_url = '/users/login/'
-    redirect_field_name = 'next'
+    login_url = "/users/login/"
+    redirect_field_name = "next"
 
 
 class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
@@ -78,5 +77,5 @@ class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("blog:blog_list")
 
     # Куда редиректить если не авторизован
-    login_url = '/users/login/'
-    redirect_field_name = 'next'
+    login_url = "/users/login/"
+    redirect_field_name = "next"

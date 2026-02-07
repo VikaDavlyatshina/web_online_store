@@ -11,14 +11,13 @@ from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
 from users.models import User
 
-
 # Create your views here.
 
 
 class UserCreateView(CreateView):
     form_class = UserRegisterForm
-    template_name = 'users/register.html'
-    success_url = reverse_lazy('users:login')
+    template_name = "users/register.html"
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         user = form.save()
@@ -36,8 +35,8 @@ class UserCreateView(CreateView):
             fail_silently=True,
         )
 
-
         return super().form_valid(form)
+
 
 def email_verifications(request, token):
     user = get_object_or_404(User, token=token)
@@ -45,6 +44,7 @@ def email_verifications(request, token):
     user.save()
     return redirect(reverse("users:login"))
 
+
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect("home")

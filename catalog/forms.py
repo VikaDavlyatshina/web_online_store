@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from catalog.models import Product, Category, Contact
 
+
 class StyleFormMixin:
     """
     Миксин для автоматической стилизации полей формы.
@@ -13,21 +14,24 @@ class StyleFormMixin:
         super().__init__(*args, **kwargs)
 
         # Проходим по всем полям формы
-        for field_name, field, in self.fields.items():
+        for (
+            field_name,
+            field,
+        ) in self.fields.items():
             # Проверяем тип виджета
             widget = field.widget
 
             if isinstance(widget, forms.CheckboxInput):
-                field.widget.attrs['class'] = 'form-check-input'
+                field.widget.attrs["class"] = "form-check-input"
             elif isinstance(widget, forms.Select):
-                field.widget.attrs['class'] = 'form-select'
+                field.widget.attrs["class"] = "form-select"
             elif isinstance(widget, forms.SelectMultiple):
-                field.widget.attrs['class'] = 'form-select'
+                field.widget.attrs["class"] = "form-select"
             elif isinstance(widget, forms.RadioSelect):
-                field.widget.attrs['class'] = 'form-check-input'
+                field.widget.attrs["class"] = "form-check-input"
             else:
                 # Для TextInput, NumberInput, EmailInput, Textarea, FileInput и т.д.
-                field.widget.attrs['class'] = 'form-control'
+                field.widget.attrs["class"] = "form-control"
 
 
 class ProductForm(StyleFormMixin, forms.ModelForm):
@@ -37,45 +41,43 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 
     # Список запрещенных слов
     FORBIDDEN_WORDS = [
-        'казино', 'криптовалюта', 'крипта',
-        'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар',
+        "казино",
+        "криптовалюта",
+        "крипта",
+        "биржа",
+        "дешево",
+        "бесплатно",
+        "обман",
+        "полиция",
+        "радар",
     ]
 
     class Meta:
         model = Product
-        exclude  = ["created_at", "updated_at"]
-
-
+        exclude = ["created_at", "updated_at"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Placeholders и специфические атрибуты
-        self.fields['name'].widget.attrs['placeholder'] = 'Например: Набор для творчества "Алмазная мозаика"'
+        self.fields["name"].widget.attrs["placeholder"] = 'Например: Набор для творчества "Алмазная мозаика"'
 
-        self.fields['purchase_price'].widget.attrs.update({
-            'step': '0.1',
-            'min': '1',
-            'placeholder': '0.00'
-        })
+        self.fields["purchase_price"].widget.attrs.update({"step": "0.1", "min": "1", "placeholder": "0.00"})
 
-        self.fields['description'].widget.attrs.update({
-            'rows': '4',
-            'placeholder': 'Опишите товар подробно: материалы, размеры, особенности...'
-        })
+        self.fields["description"].widget.attrs.update(
+            {"rows": "4", "placeholder": "Опишите товар подробно: материалы, размеры, особенности..."}
+        )
 
         # Настройка Категории
-        self.fields['category'].empty_label = "Выберите категорию..."
-        self.fields['category'].queryset = Category.objects.all().order_by('name')
+        self.fields["category"].empty_label = "Выберите категорию..."
+        self.fields["category"].queryset = Category.objects.all().order_by("name")
         if not self.instance.pk:
-            self.fields['category'].initial = None
-
+            self.fields["category"].initial = None
 
         # Убираем стандартные подписи Django для изображения
-        self.fields['image'].widget.clear_checkbox_label = "Очистить"
-        self.fields['image'].widget.input_text = "Изменить"
-        self.fields['image'].widget.initial_text = "Текущее"
-
+        self.fields["image"].widget.clear_checkbox_label = "Очистить"
+        self.fields["image"].widget.input_text = "Изменить"
+        self.fields["image"].widget.initial_text = "Текущее"
 
     def clean_name(self):
         """Проверка, содержит ли Название запрещенные слова"""
@@ -94,9 +96,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
         name_lower = name.lower()
         for forbidden_word in self.FORBIDDEN_WORDS:
             if forbidden_word in name_lower:
-                raise ValidationError(
-                    f"Название содержит запрещенное слово: {forbidden_word}"
-                )
+                raise ValidationError(f"Название содержит запрещенное слово: {forbidden_word}")
 
         return name
 
@@ -109,9 +109,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
             description_lower = description.lower()
             for forbidden_word in self.FORBIDDEN_WORDS:
                 if forbidden_word in description_lower:
-                    raise ValidationError(
-                        f"Описание содержит запрещенное слово: {forbidden_word}"
-                    )
+                    raise ValidationError(f"Описание содержит запрещенное слово: {forbidden_word}")
 
         return description
 
@@ -142,10 +140,12 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Contact
-        exclude = ["created_at", ]
+        exclude = [
+            "created_at",
+        ]
         error_messages = {
-            'name': {'required': 'Пожалуйста, введите ваше имя'},
-            'message': {'required': 'Пожалуйста, введите сообщение'},
+            "name": {"required": "Пожалуйста, введите ваше имя"},
+            "message": {"required": "Пожалуйста, введите сообщение"},
         }
 
     def __init__(self, *args, **kwargs):
@@ -159,7 +159,7 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
         self.fields["message"].widget.attrs["rows"] = 4
 
     def clean(self):
-        """Проверка: email ИЛИ телефон обязательно"""
+        """Проверка: email или телефон обязательно"""
         cleaned_data = super().clean()
 
         email = cleaned_data.get("email")
@@ -170,7 +170,7 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
         if email is not None:
             email_str = str(email).strip()
 
-        # ГЛАВНОЕ ПРАВИЛО: телефон ИЛИ email
+        # Проверка, что есть или телефон, или email
         if not email_str and not phone:
             raise ValidationError("Укажите email или телефон для связи")
 
@@ -202,9 +202,9 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
 
             if email:  # если не пустая строка
                 if "@" not in email:
-                    raise ValidationError('Email должен содержать символ @')
+                    raise ValidationError("Email должен содержать символ @")
                 if "." not in email.split("@")[-1]:
-                    raise ValidationError('Email должен содержать домен')
+                    raise ValidationError("Email должен содержать домен")
 
         return email
 
@@ -215,23 +215,23 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
         if phone:
             phone_str = str(phone)
             if not phone_str.startswith("+7"):
-                raise ValidationError('Введите российский номер телефона (+7)')
+                raise ValidationError("Введите российский номер телефона (+7)")
 
         return phone
 
     def clean_message(self):
         """Проверка сообщения"""
-        message = self.cleaned_data.get('message')
+        message = self.cleaned_data.get("message")
 
         if message is None:
-            raise ValidationError('Пожалуйста, введите сообщение')
+            raise ValidationError("Пожалуйста, введите сообщение")
 
         message = message.strip()
 
         if len(message) < 10:
-            raise ValidationError('Сообщение должно быть не короче 10 символов')
+            raise ValidationError("Сообщение должно быть не короче 10 символов")
 
-        forbidden_words = ['казино', 'криптовалюта', 'биржа', "спам"]
+        forbidden_words = ["казино", "криптовалюта", "биржа", "спам"]
         message_lower = message.lower()
 
         for word in forbidden_words:

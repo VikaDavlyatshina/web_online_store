@@ -8,9 +8,8 @@ app_name = UsersConfig.name
 
 
 urlpatterns = [
-    path("login/", LoginView.as_view(template_name='users/login.html'), name="login"),
-    path("logout/", LogoutView.as_view(next_page=reverse_lazy('catalog:product_list')), name="logout"),
+    path("login/", LoginView.as_view(template_name="users/login.html"), name="login"),
+    path("logout/", LogoutView.as_view(next_page=reverse_lazy("catalog:product_list")), name="logout"),
     path("register/", UserCreateView.as_view(), name="register"),
-    path('email-confirm/<str:token>/', email_verifications, name='email_confirm'),
-
+    path("email-confirm/<str:token>/", email_verifications, name="email_confirm"),
 ]
