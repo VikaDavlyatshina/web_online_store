@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Мой профиль</h4>
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-light btn-sm">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Аватар -->
+                        <div class="col-md-4 text-center mb-4">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}"
+                                     class="img-thumbnail rounded-circle"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                                     style="width: 150px; height: 150px; font-size: 48px;">
+                                    {{ user.email|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Информация -->
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Email</label>
+                                <p class="fs-5">{{ user.email }}</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Телефон</label>
+                                <p class="fs-5">
+                                    {% if user.phone %}
+                                        {{ user.phone }}
+                                    {% else %}
+                                        <span class="text-muted">Не указан</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Страна</label>
+                                <p class="fs-5">
+                                    {% if user.country %}
+                                        {{ user.country }}
+                                    {% else %}
+                                        <span class="text-muted">Не указана</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Дата регистрации</label>
+                                <p class="fs-5">{{ user.date_joined|date:"d.m.Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

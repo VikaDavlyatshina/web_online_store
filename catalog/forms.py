@@ -12,27 +12,26 @@ class StyleFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._add_bootstrap_classes()
 
-        # Проходим по всем полям формы
-        for (
-            field_name,
-            field,
-        ) in self.fields.items():
-            # Проверяем тип виджета
+    def _add_bootstrap_classes(self):
+        """
+        Добавляет Bootstrap CSS-классы ко всем полям формы.
+        """
+        for field in self.fields.values():
             widget = field.widget
 
+            # Определяем нужный класс Bootstrap
             if isinstance(widget, forms.CheckboxInput):
-                field.widget.attrs["class"] = "form-check-input"
+                css_class = 'form-check-input'
             elif isinstance(widget, forms.Select):
-                field.widget.attrs["class"] = "form-select"
-            elif isinstance(widget, forms.SelectMultiple):
-                field.widget.attrs["class"] = "form-select"
-            elif isinstance(widget, forms.RadioSelect):
-                field.widget.attrs["class"] = "form-check-input"
+                css_class = 'form-select'
             else:
-                # Для TextInput, NumberInput, EmailInput, Textarea, FileInput и т.д.
-                field.widget.attrs["class"] = "form-control"
+                css_class = 'form-control'  # Для всех остальных
 
+            # Добавляем класс
+            if 'class' not in widget.attrs:
+                widget.attrs['class'] = css_class
 
 class ProductForm(StyleFormMixin, forms.ModelForm):
     """
@@ -59,25 +58,35 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Placeholders и специфические атрибуты
-        self.fields["name"].widget.attrs["placeholder"] = 'Например: Набор для творчества "Алмазная мозаика"'
+        # 1. Настраиваем поле image
+        self._setup_image_field()
 
-        self.fields["purchase_price"].widget.attrs.update({"step": "0.1", "min": "1", "placeholder": "0.00"})
+        # 2. Добавляем placeholder-ы
+        self.fields["name"].widget.attrs["placeholder"] = 'Например: Набор для творчества'
+        self.fields["purchase_price"].widget.attrs.update({
+            "step": "0.1", "min": "1", "placeholder": "0.00"
+        })
+        self.fields["description"].widget.attrs.update({
+            "rows": "4", "placeholder": "Опишите товар подробно..."
+        })
 
-        self.fields["description"].widget.attrs.update(
-            {"rows": "4", "placeholder": "Опишите товар подробно: материалы, размеры, особенности..."}
-        )
-
-        # Настройка Категории
+        # 3. Настраиваем категорию
         self.fields["category"].empty_label = "Выберите категорию..."
         self.fields["category"].queryset = Category.objects.all().order_by("name")
         if not self.instance.pk:
             self.fields["category"].initial = None
 
-        # Убираем стандартные подписи Django для изображения
-        self.fields["image"].widget.clear_checkbox_label = "Очистить"
-        self.fields["image"].widget.input_text = "Изменить"
-        self.fields["image"].widget.initial_text = "Текущее"
+    def _setup_image_field(self):
+        """Настраиваем поле для загрузки изображения."""
+        image_field = self.fields.get('image')
+        if image_field and isinstance(image_field.widget, forms.ClearableFileInput):
+            # Меняем английские тексты на русские
+            image_field.widget.clear_checkbox_label = "Удалить изображение"
+            image_field.widget.input_text = "Изменить изображение"
+            image_field.widget.initial_text = "Текущее изображение"
+
+            # Добавляем accept для изображений
+            image_field.widget.attrs['accept'] = 'image/*'
 
     def clean_name(self):
         """Проверка, содержит ли Название запрещенные слова"""
@@ -151,7 +160,7 @@ class ContactForm(StyleFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Настройка внешнего вида полей
+        # Добавляем Placeholders
         self.fields["name"].widget.attrs["placeholder"] = "Ваше имя"
         self.fields["email"].widget.attrs["placeholder"] = "ваш@email.com"
         self.fields["phone"].widget.attrs["placeholder"] = "+7 (999) 123-45-67"
