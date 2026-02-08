@@ -47,12 +47,18 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     """
 
     model = Product
-    template_name = "catalog/product_add.html"
     form_class = ProductForm
+    template_name = "catalog/product_add.html"
+
+    def form_valid(self, form):
+        product = form.save()
+        user = self.request.user
+        product.owner = user
+        product.save()
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         return context
 
     def get_success_url(self):

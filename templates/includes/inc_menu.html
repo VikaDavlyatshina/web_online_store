@@ -6,15 +6,28 @@
         <a class="p-2 btn btn-outline-primary" href="{% url 'blog:blog_list' %}">Наш блог</a>
     </nav>
     <div class="ms-auto">
+
         {% if user.is_authenticated %}
+        <div class="d-inline-block">
+            <!-- Кнопка профиля с аватаркой -->
+            <a class="btn btn-outline-primary me-2" href="{% url 'users:profile' %}">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="Аватар" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" class="me-1">
+                {% else %}
+                {% endif %}
+                {{ user.email }}
+            </a>
+
+            <!-- Кнопка выхода -->
             <form method="post" action="{% url 'users:logout' %}" class="d-inline">
                 {% csrf_token %}
-                <a class="btn btn-outline-primary me-2" href="{% url 'users:profile' %}">Профиль</a>
                 <button type="submit" class="btn btn-outline-danger">Выйти</button>
             </form>
+
         {% else %}
             <a class="btn btn-outline-primary me-2" href="{% url 'users:login' %}">Войти</a>
             <a class="btn btn-success" href="{% url 'users:register' %}">Регистрация</a>
         {% endif %}
+        </div>
     </div>
 </div>

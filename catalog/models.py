@@ -1,8 +1,10 @@
 from django.urls import reverse
 from django.conf import settings
-from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+
+from users.models import User
+
 
 # Create your models here.
 
@@ -94,11 +96,15 @@ class Product(models.Model):
         auto_now=True,  # Автоматически при сохранении
         verbose_name="Дата последнего изменения",
     )
+    owner = models.ForeignKey(User, verbose_name="Владелец", help_text="Укажите владельца товара", blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ["category", "name"]
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+        ]
 
     def __str__(self):
         return f"{self.name} - {self.purchase_price} руб."

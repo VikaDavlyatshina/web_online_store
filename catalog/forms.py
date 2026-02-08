@@ -53,7 +53,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at"]
+        exclude = ["created_at", "updated_at", "owner"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
