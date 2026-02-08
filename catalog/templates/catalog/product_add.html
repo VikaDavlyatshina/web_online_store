@@ -1,255 +1,228 @@
-{% extends 'base.html' %}     <!-- Тег указывает, что текущий шаблон расширяет(наследует) базовый шаблон -->
-
+{% extends 'base.html' %}
 
 {% block title %}
-    {% if object %}Редактирование {{ object.name }}{% else %}Добавить товар{% endif %} | Skystore
+    {% if product %}Редактирование {{ product.name }}{% else %}Добавить товар{% endif %} | Skystore
 {% endblock %}
-<!-- Меняем описание -->
+
 {% block page_description %}
-    {% if object %}Отредактируйте информацию о товаре ниже{% else %}Заполните форму ниже, чтобы добавить товар в каталог{% endif %}
+    {% if product %}Отредактируйте информацию о товаре ниже{% else %}Заполните форму ниже, чтобы добавить товар в каталог{% endif %}
 {% endblock %}
 
 {% block content %}
-
-<div class="container">
-    <div class="row align-items-stretch">
-        <div class="col-md-6">
-            <div class="card shadow">
+<div class="container mt-4">
+    <div class="row">
+        <!-- ЛЕВАЯ КОЛОНКА: Подсказки -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        {% if product %}Информация о товаре{% else %}Советы по заполнению{% endif %}
+                    </h5>
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title mb-4">📋 Инструкция</h4>
 
-                    <div class="alert alert-info">
-                        <strong>Поля со * обязательны для заполнения</strong>
+                    <!-- Статус товара (ТОЛЬКО при редактировании) -->
+                    {% if product %}
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading mb-1">
+                            <i class="bi bi-info-circle"></i> Текущий статус:
+                        </h6>
+                        <span class="badge
+                            {% if product.publication_status == 'published' %}bg-success
+                            {% elif product.publication_status == 'pending' %}bg-warning
+                            {% elif product.publication_status == 'rejected' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ product.get_publication_status_display }}
+                        </span>
+
+                        <!-- Владелец (с проверкой) -->
+                        <div class="mt-2">
+                            <span class="text-muted small">Владелец:</span>
+                            <span class="ms-2 fw-medium">
+                                {% if product.owner %}
+                                    {{ product.owner.get_full_name|default:product.owner.email }}
+                                {% else %}
+                                    <span class="text-muted">Не указан</span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        {% if product.publication_status == 'pending' %}
+                        <p class="small mt-2 mb-0">Товар на проверке у модератора</p>
+                        {% endif %}
                     </div>
+                    {% else %}
+                    <!-- Информация при создании -->
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading mb-1">
+                            <i class="bi bi-plus-circle"></i> Создание нового товара
+                        </h6>
+                        <p class="small mb-0">После добавления товар будет иметь статус <strong>«Черновик»</strong> и виден только вам.</p>
+                    </div>
+                    {% endif %}
 
-                    <!-- Аккордеон с советами -->
-                    <div class="accordion" id="helpAccordion">
-
-                        <!-- Совет 1 -->
+                    <!-- Советы в аккордеоне -->
+                    <div class="accordion" id="tipsAccordion">
+                        <!-- Название -->
                         <div class="accordion-item">
-                            <h5 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#help1">
-                                    ✏️ Как назвать товар?
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#tip1">
+                                    ✏️ Название товара
                                 </button>
-                            </h5>
-                            <div id="help1" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <ul>
-                                        <li>Укажите бренд и модель</li>
-                                        <li>Используйте ключевые слова</li>
-                                        <li>Будьте конкретны</li>
-                                    </ul>
+                            </h6>
+                            <div id="tip1" class="accordion-collapse collapse">
+                                <div class="accordion-body small">
+                                    • Укажите бренд и модель<br>
+                                    • Добавьте ключевые характеристики<br>
+                                    • Пример: "Смартфон Xiaomi Redmi Note 12"
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Совет 2 -->
+                        <!-- Описание -->
                         <div class="accordion-item">
-                            <h5 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#help2">
-                                    💰 Как назначить цену?
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#tip2">
+                                    📝 Описание
                                 </button>
-                            </h5>
-                            <div id="help2" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <ul>
-                                        <li>Учитывайте стоимость доставки</li>
-                                        <li>Сравните с конкурентами</li>
-                                    </ul>
+                            </h6>
+                            <div id="tip2" class="accordion-collapse collapse">
+                                <div class="accordion-body small">
+                                    • Опишите основные функции<br>
+                                    • Укажите размеры, вес, материал<br>
+                                    • Добавьте преимущества товара
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Совет 3 -->
+                        <!-- Фото -->
                         <div class="accordion-item">
-                            <h5 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#help3">
-                                    📸 Как сделать фото?
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#tip3">
+                                    📸 Фотографии
                                 </button>
-                            </h5>
-                            <div id="help3" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <ul>
-                                        <li>Используйте хорошее освещение</li>
-                                        <li>Покажите товар с разных ракурсов</li>
-                                        <li>Фон должен быть нейтральным</li>
-                                    </ul>
+                            </h6>
+                            <div id="tip3" class="accordion-collapse collapse">
+                                <div class="accordion-body small">
+                                    • Используйте хорошее освещение<br>
+                                    • Сделайте фото с разных ракурсов<br>
+                                    • Максимальный размер: 5MB
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Ещё советы... -->
-
                     </div>
 
-                    <!-- Чек-лист внизу -->
-                    <div class="p-3 bg-light rounded mb-4">
-                        <h6>✅ Быстрая проверка:</h6>
-                        <!-- ... чекбоксы ... -->
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="checkPrice">
-                            <label class="form-check-label" for="checkPrice">Цена адекватная</label>
+                    <!-- Быстрая проверка -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="mb-2">✅ Перед отправкой:</h6>
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" id="check1">
+                            <label class="form-check-label" for="check1">Цена указана верно</label>
                         </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="checkPhoto">
-                            <label class="form-check-label" for="checkPhoto">Фото чёткое</label>
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" id="check2">
+                            <label class="form-check-label" for="check2">Категория выбрана правильно</label>
                         </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="checkDescription">
-                            <label class="form-check-label" for="checkDescription">Описание полное</label>
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" id="check3">
+                            <label class="form-check-label" for="check3">Нет запрещенных слов</label>
                         </div>
-
-                    </div>
-
-                    <div class="mt-4 text-center">
-                        <p class="text-muted">
-                            <small> После добавления товар появится в каталоге через 5-10 минут</small>
-                        </p>
-                    </div>
-
-                    <!-- ЯВНАЯ нижняя граница -->
-                    <div class="card-footer bg-white border-top text-center py-3">
-                        <small class="text-muted">
-                            <i class="bi bi-question-circle me-1"></i>
-                            Нужна помощь? Напишите в поддержку
-                        </small>
                     </div>
                 </div>
             </div>
-
         </div>
 
-
-        <div class="col-md-6 mb-4">
+        <!-- ПРАВАЯ КОЛОНКА: Форма -->
+        <div class="col-lg-8">
             <div class="card shadow">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        {% if object %}Редактирование товара{% else %}Заполните данные{% endif %}
-                    </h5>
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi {% if product %}bi-pencil-square{% else %}bi-plus-square{% endif %} me-2"></i>
+                        {% if product %}Редактирование товара{% else %}Добавить товар{% endif %}
+                    </h4>
+                    {% if product %}
+                    <small class="text-muted">
+                        Владелец: {{ product.owner.email|default:"Не указан" }}
+                    </small>
+                    {% endif %}
+                </div>
 
+                <div class="card-body">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <!-- Название -->
                         <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">
-                                Название товара *
-                            </label>
+                            <label class="form-label fw-bold">Название товара *</label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.name.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
+                            <div class="text-danger small mt-1">{{ form.name.errors }}</div>
                             {% endif %}
                         </div>
 
-                        <!-- Категория -->
-                        <div class="mb-3">
-                            <label for="{{ form.category.id_for_label }}" class="form-label">
-                                Категория *
-                            </label>
-                            {{ form.category }}
-                            {% if form.category.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.category.errors %}
-                                {{ error }}
-                                {% endfor %}
+                        <!-- Категория и Цена -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Категория *</label>
+                                {{ form.category }}
                             </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Цена -->
-                        <div class="mb-3">
-                            <label for="{{ form.purchase_price.id_for_label }}" class="form-label">
-                                Цена *
-                            </label>
-                            <div class="input-group">
-                                {{ form.purchase_price }}
-                                <span class="input-group-text">₽</span>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Цена *</label>
+                                <div class="input-group">
+                                    {{ form.purchase_price }}
+                                    <span class="input-group-text">₽</span>
+                                </div>
                             </div>
-                            {% if form.purchase_price.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.purchase_price.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
                         </div>
 
                         <!-- Описание -->
                         <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">
-                                Описание
-                            </label>
+                            <label class="form-label fw-bold">Описание</label>
                             {{ form.description }}
-                            {% if form.description.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.description.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                            <div class="form-text small">Опишите товар подробно. Это увеличит шансы на продажу.</div>
                         </div>
 
                         <!-- Фото -->
-                        <div class="mb-3">
-                            <label for="{{ form.image.id_for_label }}" class="form-label">
-                                Фото товара
-                            </label>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Фото товара</label>
+                            {% if product and product.image %}
+                            <div class="mb-3 border rounded p-3">
+                                <p class="mb-2">Текущее фото:</p>
+                                <img src="{{ product.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="img-thumbnail"
+                                     style="max-width: 150px;">
+                                <div class="form-check mt-2">
+                                    {{ form.image.clear }}
+                                    <label for="{{ form.image.clear.id_for_label }}" class="form-check-label text-danger">
+                                        Удалить текущее фото
+                                    </label>
+                                </div>
+                            </div>
+                            <p class="mb-2">Или загрузите новое:</p>
+                            {% endif %}
                             {{ form.image }}
-                            {% if form.image.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.image.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            <div class="form-text">Максимальный размер: 5MB</div>
                         </div>
 
-                        <!-- Чекбокс "Опубликован" -->
-                        <div class="mb-3 form-check">
-                            {{ form.is_published }}
-                            <label for="{{ form.is_published.id_for_label }}" class="form-check-label">
-                                Опубликовать на сайте
-                            </label>
-                            {% if form.is_published.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in form.is_published.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Кнопка -->
-                        <div class="d-flex justify-content-between mt-4">
-                            <!-- КНОПКА ОТМЕНЫ -->
-                            <a href="{% if object %}{% url 'catalog:product_details' object.pk %}{% else %}{% url 'catalog:product_list' %}{% endif %}"
-                               class="btn btn-outline-secondary px-4 py-2">
-                                <i class="bi bi-arrow-left me-1"></i> Отмена
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a href="{% if product %}{% url 'catalog:product_details' product.pk %}{% else %}{% url 'catalog:product_list' %}{% endif %}"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Отмена
                             </a>
-
-                            <!-- КНОПКА СОХРАНЕНИЯ -->
-                            <button type="submit" class="btn px-4 py-2"
-                                    style="background-color: #57D4AB; color: white; border-radius: 10px; border: none;">
-                                <i class="bi {% if object %}bi-save{% else %}bi-plus-square{% endif %} me-2"></i>
-                                {% if object %}Сохранить изменения{% else %}Добавить товар{% endif %}
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi {% if product %}bi-save{% else %}bi-plus-lg{% endif %}"></i>
+                                {% if product %}Сохранить{% else %}Добавить товар{% endif %}
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
-
     </div>
-
 </div>
-
 {% endblock %}

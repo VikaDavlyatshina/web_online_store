@@ -53,7 +53,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "owner"]
+        exclude = ("created_at", "updated_at", "owner", "publication_status")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -141,6 +141,32 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 
         return image
 
+
+class ProductModeratorForm(StyleFormMixin, forms.ModelForm):
+    """
+    Форма для модератора - может изменять только статус публикации
+    """
+
+    class Meta:
+        model = Product
+        fields = ("publication_status",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Настраиваем поле статуса
+        self.fields['publication_status'].widget.attrs['class'] = 'form-select'
+        self.fields['publication_status'].help_text = "Выберите новый статус публикации"
+
+        # Комментарий модератора (не сохраняется в модель)
+        self.fields['moderator_comment'] = forms.CharField(
+            required=False,
+            widget=forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Укажите причину изменения статуса...',
+                'class': 'form-control'
+            }),
+            label='Комментарий модератора'
+        )
 
 class ContactForm(StyleFormMixin, forms.ModelForm):
     """

@@ -141,28 +141,47 @@
     </div>
 
     <div class="row mt-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <!-- КНОПКА НАЗАД -->
-            <a href="{% url 'catalog:product_list' %}"
-               class="btn btn-outline-secondary">
-                ← Назад к каталогу
-            </a>
-
-            <!-- КНОПКИ УПРАВЛЕНИЯ -->
-            <div class="btn-group">
-                <a href="{% url 'catalog:product_update' pk=product.pk %}"
-                   class="btn btn-outline-primary me-2">
-                    <i class="fas fa-edit"></i> Редактировать
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- КНОПКА НАЗАД -->
+                <a href="{% url 'catalog:product_list' %}"
+                   class="btn btn-outline-secondary">
+                    ← Назад к каталогу
                 </a>
 
-                <a href="{% url 'catalog:product_delete' pk=product.pk %}"
-                   class="btn btn-outline-danger">
-                    <i class="fas fa-trash"></i> Удалить
-                </a>
+                <!-- КНОПКИ УПРАВЛЕНИЯ -->
+                <div class="btn-group">
+                    <!-- Кнопка для ВЛАДЕЛЬЦА: Редактировать -->
+                    {% if user == product.owner %}
+                    <a href="{% url 'catalog:product_update' product.pk %}"
+                       class="btn btn-outline-primary me-2">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+
+                    <!-- Кнопка для МОДЕРАТОРА (не владельца): Модерировать -->
+                    {% elif perms.catalog.can_unpublish_product and user != product.owner %}
+                    <a href="{% url 'catalog:product_update' product.pk %}"
+                       class="btn btn-outline-warning me-2">
+                        <i class="bi bi-shield-check"></i> Модерировать
+                    </a>
+                    {% endif %}
+
+                    <!-- Кнопка удаления (для владельца ИЛИ модератора) -->
+                    {% if user == product.owner or perms.catalog.delete_product %}
+                    <form method="post"
+                          action="{% url 'catalog:product_delete' product.pk %}"
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-outline-danger"
+                                onclick="return confirm('Удалить товар «{{ product.name }}»?');">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 {% endblock %}

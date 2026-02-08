@@ -89,14 +89,38 @@ class Product(models.Model):
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )
-    is_published = models.BooleanField(default=True, verbose_name="Опубликован", help_text="Отображать товар на сайте")
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")  # Автоматически при создании
     updated_at = models.DateTimeField(
         auto_now=True,  # Автоматически при сохранении
         verbose_name="Дата последнего изменения",
     )
-    owner = models.ForeignKey(User, verbose_name="Владелец", help_text="Укажите владельца товара", blank=True, null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(
+        User,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True, null=True,
+        # # Если удалить владельца, всё его товары удаляться автоматически
+        # on_delete=models.CASCADE
+        # Если Автор удален, автор поста станет NULL (None)
+        on_delete = models.SET_NULL)
+
+
+    # Статусы публикации
+    STATUS_CHOICES = [
+        ("draft", "Черновик"), # Не виден никому кроме владельца
+        ("pending", "На модерации"), # Ждёт проверки Модератором
+        ("published", "Опубликовано"),   # Опубликован
+        ("rejected", "Отклонено"),   # Не прошёл модерацию
+    ]
+
+    publication_status = models.CharField(
+        verbose_name="Статус публикации",
+        help_text="Укажите статус публикации",
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft"   # По умолчанию - черновик
+    )
 
     class Meta:
         verbose_name = "Товар"
@@ -104,6 +128,7 @@ class Product(models.Model):
         ordering = ["category", "name"]
         permissions = [
             ("can_unpublish_product", "Может отменять публикацию продукта"),
+            ("can_publish", "Может публиковать"),
         ]
 
     def __str__(self):
