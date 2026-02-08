@@ -13,43 +13,6 @@
 
 <div class="container">
 
-    <!-- Сообщение -->
-    {% if messages %}
-    <div class="row mt-4">
-        <div class="col-12">
-            {% for message in messages %}
-            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}
-                        alert-dismissible fade show" role="alert">
-
-                <!-- Заголовок в зависимости от типа -->
-                <h4 class="alert-heading">
-                    {% if message.tags == 'success' %}
-                    ✅ Сообщение отправлено!
-                    {% else %}
-                    ❌ Сообщение не отправлено!
-                    {% endif %}
-                </h4>
-
-                <!-- Основное сообщение -->
-                <p>{{ message }}</p>
-
-                <!-- Дополнительный текст -->
-                {% if message.tags == 'success' %}
-                <p>Мы свяжемся с вами в ближайшее время.</p>
-                {% else %}
-                <p>Попробуйте отправить сообщение снова.</p>
-                {% endif %}
-
-                <hr>
-                <!-- Кнопка закрытия -->
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-
     <!-- БЛОК 1: Основная информация и форма -->
     <div class="row text-start">
         <!--КОЛОНКА 1: Информация о компании -->

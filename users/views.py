@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -53,10 +54,29 @@ def email_verifications(request, token):
 
 
 def logout_view(request):
-    logout(request)
-    messages.success(request, "Вы успешно вышли из системы.")
-    return redirect("home")
+    # Сохраняем referer до logout
+    referer = request.META.get('HTTP_REFERER', '')
 
+    # Определяем куда редиректить
+    if 'blog' in referer:
+        redirect_url = reverse('blog:blog_list')
+    else:
+        redirect_url = reverse('catalog:product_list')
+
+    # Выходим
+    logout(request)
+
+    # Добавляем сообщение
+    messages.success(request, "Вы успешно вышли из системы.")
+
+    # Используем HttpResponseRedirect вместо redirect()
+    # Это сохраняет сообщение в сессии
+    response = HttpResponseRedirect(redirect_url)
+
+    # Явно сохраняем сессию
+    request.session.save()
+
+    return response
 
 class ProfileView(LoginRequiredMixin, View):
     """Страница просмотра профиля"""
