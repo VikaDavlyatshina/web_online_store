@@ -16,6 +16,7 @@ dependencies = [
     "ipython>=9.8.0,<10.0",
     "django-phonenumber-field (>=8.4.0,<9.0.0)",
     "phonenumbers (>=9.0.23,<10.0.0)",
+    "redis (>=7.2.0,<8.0.0)",
 ]
 
 [build-system]
