@@ -64,38 +64,68 @@ class BlogPost(models.Model):
         """Получение абсолютной ссылки для Поста блога"""
         return reverse("blog:blogpost_detail", kwargs={"pk": self.pk})
 
-    # def save(self, *args, **kwargs):
-    #     """Переопределяем save для отправки email при 100 просмотрах"""
-    #
-    #     # Условия:
-    #     # 1. Просмотров больше 100
-    #     # 2. Email еще не отправлялся (email_sent_at пустое)
-    #     # 3. Это существующая запись (есть pk)
-    #
-    #     should_send_email = (
-    #         self.views_count >= 100 and
-    #         not self.email_sent_at
-    #         and self.pk is not None
-    #     )
-    #
-    #     super().save(*args, **kwargs)
-    #
-    #     if should_send_email:
-    #         self.send_100_views_email()
-    #         self.email_sent_at = timezone.now()
-    #         BlogPost.objects.filter(pk=self.pk).update(email_sent_at=timezone.now())
-    #
-    # def send_100_views_email(self):
-    #     """Функция для отправки письма при 100 просмотрах"""
-    #
-    #     subject = f"Ура! Статья {self.title} достигла 100 просмотров!"
-    #     message = (f"Дорогой администратор! Позравляем, ваша статья {self.title} достигла 100 просмотр"
-    #                f" Посмотреть статью: {self.get_absolute_url()}\n Поздравляем с популярностью")
-    #
-    #     send_mail(
-    #         subject=subject,
-    #         message=message,
-    #         from_email=settings.DEFAULT_FROM_EMAIL,
-    #         recipient_list=[settings.ADMIN_EMAIL],
-    #         fail_silently=False,
-    #     )
+    def save(self, *args, **kwargs):
+        """Переопределяем save для отправки email при 100 просмотрах"""
+
+        # Запоминаем старые значения ДО сохранения
+        if self.pk:  # Если запись уже существует
+            try:
+                old_instance = BlogPost.objects.get(pk=self.pk)
+                old_views = old_instance.views_count
+                old_email_sent = old_instance.email_sent_at
+            except BlogPost.DoesNotExist:
+                old_views = 0
+                old_email_sent = None
+        else:  # Если это новая запись
+            old_views = 0
+            old_email_sent = None
+
+        # Сначала сохраняем запись
+        super().save(*args, **kwargs)
+
+        # Проверяем условия ПОСЛЕ сохранения
+        has_100_views = self.views_count >= 100
+        email_not_sent = not old_email_sent
+        just_passed_100 = old_views < 100
+        is_existing = self.pk is not None
+
+        should_send_email = has_100_views and email_not_sent and just_passed_100 and is_existing
+        if should_send_email:
+            # Отправляем письмо
+            self.send_100_views_email()
+
+            # Обновляем поле с датой отправки
+            self.email_sent_at = timezone.now()
+
+            # Сохраняем ТОЛЬКО поле email_sent_at (чтобы не создавать рекурсию)
+            super().save(update_fields=['email_sent_at'])
+
+    def send_100_views_email(self):
+        """Функция для отправки письма при 100 просмотрах"""
+
+        subject = f"Ура! Статья '{self.title}' достигла 100 просмотров!"
+
+        # Для разработки используйте localhost
+        domain = "127.0.0.1:8000"
+
+        # Полный URL статьи
+        full_url = f"http://{domain}{self.get_absolute_url()}"
+
+        html_message = f"""
+        <html>
+            <body>
+                <h2>Дорогой администратор!</h2>
+                <p>Поздравляем! Ваша статья <strong>"{self.title}"</strong> достигла 100 просмотров!</p>
+                <p><a href="{full_url}">Посмотреть статью</a></p>
+            </body>
+        </html>
+        """
+
+        send_mail(
+            subject=subject,
+            message=f"Посмотреть статью: {full_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],
+            html_message=html_message,
+            fail_silently=False,
+        )
