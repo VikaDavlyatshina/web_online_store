@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Категории товаров{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'catalog:product_list' %}">Каталог</a></li>
+            <li class="breadcrumb-item active">Категории</li>
+        </ol>
+    </nav>
+
+    <!-- Заголовок -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Все категории</h1>
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-primary">
+            ← Все товары
+        </a>
+    </div>
+
+    <!-- Сетка категорий -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for category in categories %}
+        <div class="col">
+            <div class="card h-100 shadow-sm hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title">{{ category.name }}</h5>
+                    {% if category.description %}
+                    <p class="card-text text-muted small">
+                        {{ category.description|truncatechars:100 }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="badge bg-primary rounded-pill p-2">
+                            {{ category.product_count }} товаров
+                        </span>
+                        
+                        <a href="{% url 'catalog:category_products' category.id %}" 
+                           class="btn btn-sm btn-outline-primary">
+                            Перейти →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center p-5">
+                <h4>Нет доступных категорий</h4>
+                <p class="mb-0">Товары появятся здесь, когда будут добавлены</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
