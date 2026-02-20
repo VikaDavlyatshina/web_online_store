@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Редактирование профиля</h4>
+                </div>
+
+                <div class="card-body">
+                    <!-- Сообщения -->
+                    {% if messages %}
+                    <div class="mb-3">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Форма -->
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Аватар -->
+                        <div class="mb-4 text-center">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}"
+                                     class="img-thumbnail rounded-circle mb-2"
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="{{ form.avatar.id_for_label }}" class="form-label">Аватар</label>
+                                {{ form.avatar }}
+                                {% if form.avatar.errors %}
+                                    <div class="text-danger small">{{ form.avatar.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Телефон -->
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">Телефон</label>
+                            {{ form.phone }}
+                            {% if form.phone.help_text %}
+                                <div class="form-text">{{ form.phone.help_text }}</div>
+                            {% endif %}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Страна -->
+                        <div class="mb-3">
+                            <label for="{{ form.country.id_for_label }}" class="form-label">Страна</label>
+                            {{ form.country }}
+                            {% if form.country.help_text %}
+                                <div class="form-text">{{ form.country.help_text }}</div>
+                            {% endif %}
+                            {% if form.country.errors %}
+                                <div class="text-danger small">{{ form.country.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'users:profile' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

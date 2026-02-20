@@ -1,7 +1,10 @@
 from django.urls import reverse
 from django.conf import settings
-from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
+
+from users.models import User
+
 
 # Create your models here.
 
@@ -46,7 +49,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """Получение абсолютной ссылки для категории"""
-        return reverse('catalog:category_products', kwargs={'pk': self.pk})
+        return reverse("catalog:category_products", kwargs={"pk": self.pk})
 
 
 class Product(models.Model):
@@ -86,29 +89,54 @@ class Product(models.Model):
         verbose_name="Цена за покупку (руб.)",
         help_text="Укажите цену в рублях с копейками. Минимальная цена: 1 рубль",
     )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name="Опубликован",
-        help_text="Отображать товар на сайте"
-    )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")  # Автоматически при создании
     updated_at = models.DateTimeField(
         auto_now=True,  # Автоматически при сохранении
         verbose_name="Дата последнего изменения",
     )
+    owner = models.ForeignKey(
+        User,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True, null=True,
+        # # Если удалить владельца, всё его товары удаляться автоматически
+        # on_delete=models.CASCADE
+        # Если Автор удален, автор поста станет NULL (None)
+        on_delete = models.SET_NULL)
+
+
+    # Статусы публикации
+    STATUS_CHOICES = [
+        ("draft", "Черновик"), # Не виден никому кроме владельца
+        ("pending", "На модерации"), # Ждёт проверки Модератором
+        ("published", "Опубликовано"),   # Опубликован
+        ("rejected", "Отклонено"),   # Не прошёл модерацию
+    ]
+
+    publication_status = models.CharField(
+        verbose_name="Статус публикации",
+        help_text="Укажите статус публикации",
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft"   # По умолчанию - черновик
+    )
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ["category", "name"]
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+            ("can_publish", "Может публиковать"),
+        ]
 
     def __str__(self):
         return f"{self.name} - {self.purchase_price} руб."
 
     def get_absolute_url(self):
         """Получение абсолютной ссылки для товара"""
-        return reverse('catalog:product_details', kwargs={'pk': self.pk})
+        return reverse("catalog:product_details", kwargs={"pk": self.pk})
 
 
 class Contact(models.Model):
@@ -117,30 +145,21 @@ class Contact(models.Model):
     name = models.CharField(
         max_length=150,
         verbose_name="Имя пользователя",
-        # Разрешаем только буквы (A-Z, А-Я), пробелы и дефисы
-        validators=[
-            RegexValidator(
-                regex=r"^[a-zA-Za-яА-ЯёЁ\s\-]+$",
-                message="Имя должно содержать только буквы, пробелы или дефисы.",
-            ),
-            # Минимум 2 символа
-            MinLengthValidator(2, message="Имя слишком короткое"),
-        ],
         help_text="Введите ваше имя",
     )
-    phone = models.CharField(
-        max_length=20,
+    email = models.EmailField(
+        verbose_name="Email",
+        help_text="Введите ваш email",
+        blank=True,
+        null=True,
+    )
+
+    phone = PhoneNumberField(
         verbose_name="Телефон",
         help_text="Введите контактный телефон",
-        validators=[
-            # Проверяет формат: разрешает +, пробелы, скобки, тире
-            RegexValidator(
-                regex=r"^\+?[\d\s\-\(\)]+$",
-                message="Номер может содержать только цифры и символы +, -, (, )",
-            ),
-            # Гарантирует, что введено достаточно символов
-            MinLengthValidator(10, message="Номер слишком короткий. Введите минимум 10 цифр."),
-        ],
+        region="RU",
+        blank=True,
+        null=True,
     )
     message = models.TextField(
         verbose_name="Сообщение",

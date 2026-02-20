@@ -66,6 +66,8 @@
                class="btn btn-outline-secondary">
                 ← Назад к блогу
             </a>
+
+            {% if user.is_authenticated %}
             <a href="{% url 'blog:blogpost_delete' pk=post.pk %}"
                class="btn btn-sm btn-outline-danger">
                 <i class="fas fa-book-open"></i> 🗑️  Удалить
@@ -74,6 +76,7 @@
                class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-book-open"></i> ️️ ✏️ Редактировать
             </a>
+            {% endif %}
 
         </div>
 

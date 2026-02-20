@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- ИНФОРМАЦИОННЫЙ БЛОК -->
+    {% if 'next' in request.GET or not request.user.is_authenticated %}
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="text-center py-4 border rounded bg-light">
+                <div class="mb-3">
+                    <i class="bi bi-person-lock text-primary" style="font-size: 2.5rem;"></i>
+                </div>
+
+                <h4 class="text-primary mb-3">
+                    {% if 'next' in request.GET %}
+                    Требуется авторизация
+                    {% else %}
+                    Добро пожаловать
+                    {% endif %}
+                </h4>
+
+                <p class="text-muted mb-3 mx-auto" style="max-width: 500px;">
+                    {% if 'next' in request.GET %}
+                    Для доступа к запрашиваемой странице требуется авторизация.
+                    {% else %}
+                    Войдите в аккаунт для доступа ко всем возможностям сайта.
+                    {% endif %}
+                    Зарегистрируйтесь бесплатно или войдите в существующий аккаунт.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ФОРМА ВХОДА -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Авторизация</h4>
+                </div>
+
+                <div class="card-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        Неверный email или пароль. Попробуйте снова.
+                    </div>
+                    {% endif %}
+
+                    <form method="post" novalidate autocomplete="on">
+                        {% csrf_token %}
+
+                        <!-- Поле Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email"
+                                   name="username"
+                                   id="email"
+                                   class="form-control"
+                                   placeholder="ваш@email.com"
+                                   autocomplete="email"
+                                   required>
+                        </div>
+
+                        <!-- Поле Пароль -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                Пароль <span class="text-danger">*</span>
+                            </label>
+                            <input type="password"
+                                   name="password"
+                                   id="password"
+                                   class="form-control"
+                                   placeholder="Введите пароль"
+                                   autocomplete="current-password"
+                                   required>
+                        </div>
+
+                        <!-- Кнопка -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Ссылки -->
+                    <div class="text-center mt-3">
+                        <p class="mb-1">
+                            <a href="{% url 'users:register' %}" class="text-decoration-none">
+                                Нет аккаунта? Зарегистрируйтесь
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

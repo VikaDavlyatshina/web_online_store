@@ -14,7 +14,7 @@ def media_filter(value):
         return None
 
     # 2. Если это ImageField объект
-    if hasattr(value, 'name'):
+    if hasattr(value, "name"):
         # Сначала проверяем name, потом пробуем url
         if value.name:
             try:
