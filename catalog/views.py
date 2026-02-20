@@ -1,46 +1,67 @@
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.core.cache import cache
 
 from .forms import ProductForm, ContactForm, ProductModeratorForm
-from .models import Contact, Product
+from .models import Contact, Product, Category
+from .services import get_products_by_category
+
 
 # Create your views here.
 
 
 class ProductListView(ListView):
     """
-    Представление для списка товаров
+    Представление для списка товаров с простым кешированием
     """
 
     model = Product
-
+    context_object_name = 'products'
     ordering = ["-created_at"]
     paginate_by = 6
 
     def get_queryset(self):
         """
-        Показываем товары в зависимости от пользователя
+        Показываем товары в зависимости от пользователя с кешированием
         """
-
-        queryset = super().get_queryset()
         user = self.request.user
 
+        # Формируем ключ кеша в зависимости от пользователя
         if not user.is_authenticated:
-            return queryset.filter(publication_status='published')
+            cache_key = "products_public"
+        elif user.is_superuser or user.has_perm('catalog.can_unpublish_product'):
+            cache_key = "products_all"
+        else:
+            cache_key = f"products_user_{user.id}"
 
-        # Суперпользователи и модераторы видят всё
-        if user.is_superuser or user.has_perm('catalog.can_unpublish_product'):
-            return queryset
+        # Пробуем получить из кеша
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset is not None:
+            return cached_queryset
 
-        # Обычные пользователи: свои + опубликованные чужие
-        return queryset.filter(
-            Q(owner=user) |
-            Q(publication_status='published')
-        )
+        queryset = super().get_queryset()
+
+        # Применяем фильтры
+        if not user.is_authenticated:
+            filtered_queryset = queryset.filter(publication_status='published')
+        elif user.is_superuser or user.has_perm('catalog.can_unpublish_product'):
+            filtered_queryset = queryset  # все товары
+        else:
+            filtered_queryset = queryset.filter(
+                Q(owner=user) |
+                Q(publication_status='published')
+            )
+
+        # Сохраняем в кеш на 60 секунд
+        cache.set(cache_key, filtered_queryset, 60)
+
+        return filtered_queryset
 
 class ProductDetailView(DetailView):  # Убрать LoginRequiredMixin
     """
@@ -66,7 +87,6 @@ class ProductDetailView(DetailView):  # Убрать LoginRequiredMixin
 
         # Если дошли сюда - нет прав на просмотр
         raise PermissionDenied
-
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     """
@@ -203,6 +223,67 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     login_url = "/users/login/"
     redirect_field_name = "next"
 
+class CategoryProductView(ListView):
+    """Представление для отображения продуктов в категории"""
+
+    model = Product
+    template_name = "catalog/category_products.html"
+    context_object_name = "products"
+    paginate_by = 6
+
+    def get_queryset(self):
+        """Получаем queryset для товаров данной категории"""
+
+        # Получаем ID категории из URL
+        category_id = self.kwargs.get("category_id")
+
+        # Используем сервисную функцию
+        return get_products_by_category(category_id)
+
+    def get_context_data(self, **kwargs):
+        """Добавляем дополнительную информацию в контекст"""
+
+        context = super().get_context_data(**kwargs)
+
+        # Получаем ID категории из URL
+        category_id = self.kwargs.get("category_id")
+
+        # Находим категорию для отображения названия
+        category = get_object_or_404(Category, id=category_id)
+        context['category'] = category
+
+        # Добавляем заголовок страницы
+        context['title'] = f'Товары в категории: {category.name}'
+
+        # Добавляем категории для бокового меню/ссылок
+        context['categories'] = Category.objects.annotate(
+            product_count=models.Count('products')
+        ).filter(
+            product_count__gt=0
+        ).order_by('name')
+
+        # Хлебные крошки для категории
+        context['breadcrumbs'] = [
+            {'name': 'Каталог', 'url': reverse('catalog:product_list')},
+            {'name': category.name, 'url': ''},
+        ]
+
+        return context
+
+class CategoryListView(ListView):
+    """Представление для списка Категорий"""
+
+    model = Category
+    template_name = "catalog/category_list.html"
+    context_object_name = "categories"
+
+    def get_queryset(self):
+        # Получаем категории с количеством товаров в каждой
+        return Category.objects.annotate(
+            product_count=models.Count('products')
+        ).filter(
+            product_count__gt=0  # Только категории, где есть товары
+        ).order_by('name')
 
 class ContactCreateView(LoginRequiredMixin, FormView):
     """
